@@ -8,7 +8,7 @@
 A [Firebase Authentication (v4)](https://firebase.google.com/products/auth/) with [Material Components](//material.io/components) user interface, UI, template. Sign in with a token from your favorite social media platform or via email. 
 This is an excellent starting point for your next Firebase web project.
 
-<img src="https://github.com/rhroyston/rhroyston.github.io/blob/master/freebase.png" alt="screenshot" style="max-width:80%">
+<img src="https://github.com/rhroyston/rhroyston.github.io/blob/master/freebase.jpg" alt="screenshot" style="max-width:80%">
 
 #### Features
 
