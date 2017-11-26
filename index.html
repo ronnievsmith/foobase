@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- 
+    Created by Ron Royston, https://rack.pub, © 2018 MIT License
+    Available online at https://github.com/rhroyston/freebase
+-->
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- Mobile viewing enhancement -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Freebase - Firebase v4 Single Page Web App Template + MDC-Web + CSS Responsive Grid Layout." />
+    <title>Freebase - Firebase v4 Single Page Web App Template + MDC-Web + CSS Responsive Grid Layout.</title>
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicons/favicon-16x16.png">
+    <link rel="manifest" href="/favicons/manifest.json">
+    <link rel="mask-icon" href="/favicons/safari-pinned-tab.svg" color="#5bbad5">
+    <link rel="shortcut icon" href="/favicons/favicon.ico">
+    <meta name="msapplication-config" content="/favicons/browserconfig.xml">
+    <meta name="theme-color" content="#ffffff">
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:100,300,400,700,900">
+    <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="mdc-web.css">
+    <link rel="stylesheet" href="style.css" type="text/css">
+    <style>
+        :root {
+            --mdc-theme-primary: #2962ff;
+            --mdc-theme-accent: #ff6d00;
+        }
+        .mdc-ripple-surface.mdc-ripple-upgraded.mdc-button--primary::before,
+        .mdc-ripple-surface.mdc-ripple-upgraded.mdc-button--primary::after {
+            background-color: rgba(66, 66, 66, 0.08);
+        }        
+    </style>
+</head>
+<body class="mdc-typography">
+    <!--Top Header Bar-->
+    <header>
+        <nav>
+            <section>
+                <div>
+                    <a href="/" alt="home" id="logo"><img src="/media/logo.png" height="36px"></a>
+                </div>
+            </section>
+            <section>
+                <div>
+                    <button class="mdc-button" id="sign-in-button">
+                        Sign In
+                    </button>
+                    <div class="mdc-menu-anchor">
+                        <div id="account-section-image" class="hidden"></div>
+                        <div class="mdc-simple-menu" id="account-menu">
+                            <ul class="mdc-simple-menu__items mdc-list" role="menu" aria-hidden="true">
+                                <li class="mdc-list-item" id="profile-select" role="menuitem" tabindex="0">
+                                    Profile
+                                </li>
+                                <li class="mdc-list-item" id="signout-select" role="menuitem" tabindex="0">
+                                    Sign Out
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </nav>
+    </header>
+    <!--Main Page Section-->
+    <main>
+        <section id="page-title-section">
+            <h1 class="mdc-typography--display2" id="page-title"></h1>
+        </section>
+        <section id="profile">
+            <section id="main-tab-section">
+                <section id="dynamic-demo-toolbar">
+                    <nav id="dynamic-tab-bar" class="mdc-tab-bar mdc-tab-bar--indicator-accent" role="tablist">
+                        <a role="tab" aria-controls="profile-panel-1" class="mdc-tab mdc-tab--active" href="#panel-1">Profile</a>
+                        <a role="tab" aria-controls="profile-panel-2" class="mdc-tab" href="#panel-2">Activity</a>
+                        <a role="tab" aria-controls="profile-panel-3" class="mdc-tab" href="#panel-3">Edit Profile</a>
+                        <span class="mdc-tab-bar__indicator" style="background-color:#2962ff"></span>
+                    </nav>
+                </section>
+                <div class="panels">
+                    <span class="panel active" id="profile-panel-1" role="tabpanel" aria-hidden="false">
+                        <section>
+                            <figure class="figure-profile">
+                                <img src="media/character.png" alt="Account Image">
+                                <figcaption class="mdc-typography--caption">
+                                    
+                                </figcaption>    
+                            </figure>
+                        </section>
+                    </span>
+                    <span class="panel" id="profile-panel-2" role="tabpanel" aria-hidden="true">
+                        <section>
+                            Last Login <span></span>.
+                        </section>
+                    </span>
+                    <span class="panel" id="profile-panel-3" role="tabpanel" aria-hidden="true">
+                        <section>
+                            <div class="mdc-text-field">
+                                <input type="text" id="new-display-name-input" class="mdc-text-field__input" required onkeyup = "if (event.keyCode == 13)document.getElementById('edit-profile-button').click()">
+                                <label class="mdc-text-field__label" for="new-display-name-input">Display Name</label>
+                                <div class="mdc-text-field__bottom-line"></div>
+                            </div>
+                            <br>
+                            <div class="mdc-text-field">
+                                <input type="text" id="new-email-input" class="mdc-text-field__input" required onkeyup = "if (event.keyCode == 13)document.getElementById('edit-profile-button').click()">
+                                <label class="mdc-text-field__label" for="new-email-input">Email</label>
+                                <div class="mdc-text-field__bottom-line"></div>
+                            </div>
+                            <section>
+                                <button class="mdc-button" id="edit-profile-button" style="float:right">
+                                    Submit
+                                </button>
+                                <button class="mdc-button red" id="change-password-button" style="color:red">
+                                    Reset Password
+                                </button>
+                            </section>
+                        </section>
+                    </span>
+                </div>
+            </section>
+        </section>
+        <section id="landing-page">
+            <p class="mdc-typography--body1">
+                This is a single page application implementation standard starting point utilizing
+                <a href="//firebase.google.com/docs/web/setup" class="custom-anchor">Google's Firebase v4</a> software developers kit, SDK. 
+                You need a basic working knowledge of HTML, CSS, and JavaScript to appreciate this project. 
+                The user interface, UI, utilizes Google's <a href="//material.io/components" class="custom-anchor">Material Components Web</a> 
+                library along with the new <a href="//developer.mozilla.org/en-US/docs/Web/CSS/CSS_Grid_Layout" class="custom-anchor">CSS Grid layout</a> 
+                which delivers the responsive UI experience. 
+            </p>
+            <p class="note mdc-typography--body2">
+                There are several additional <a href="https://github.com/material-components/material-components-web" class="custom-anchor">MDC-Web UI components</a> that one can deploy.
+            </p>
+            <p class="mdc-typography--body1">
+                The largest portion of the scripting relates to implementing the <a href="//firebase.google.com/docs/auth/" class="custom-anchor">Authentication Subsystem</a>. 
+                Users can sign in via email or 3rd party social media accounts. 
+                Email users can update their display name, email address, and password - all with email verification. 
+                The photo / avatar for the user account comes from either the 3rd party provider or from <a href="//gravatar.com" class="custom-anchor">gravatar.com</a>. 
+                If no image url is found we fallback to a base icon.
+            </p>
+            <p class="note mdc-typography--body2">
+                Google's recommended way to add a complete sign-in system to your web app is via their <a href="//github.com/firebase/firebaseui-web" class="custom-anchor">Drop-in authentication solution</a>.
+            </p>
+            <p class="mdc-typography--body1">
+                Give me a shout on twitter @realRonRoyston or email me ron@rack.pub. 
+                For more information see <a href="//rack.pub/services" class="custom-anchor">rack.pub/services</a>.
+            </p>
+        </section>
+        <section>
+            <p class="mdc-typography--body1">
+                TWO This is main page content. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+            </p>
+        </section>
+    </main>
+    <nav>
+        <section>
+            <a href="/" class="custom-anchor">Home</a>
+            <a href="#" class="custom-anchor">Section A-8</a>
+            <a href="#" class="custom-anchor">Section B</a>
+            <a href="#" class="custom-anchor">Hyper Linked</a>
+            <a href="#" class="custom-anchor">Hadron Collided</a>
+        </section>
+    </nav>
+    <aside>
+        <section>
+            <p class="mdc-typography--body1">
+                The source is <a href="#" class="custom-anchor">here</a> on GitHub.
+            </p>
+        </section>
+    </aside>
+    <footer>
+        <section>
+            <nav>
+                <a href="#" class="custom-anchor">This is a link to nowhere</a>
+                <a href="#" class="custom-anchor">And so is this</a>
+                <a href="#" class="custom-anchor">Fool me twice</a>
+                <a href="#" class="custom-anchor">I won't be fooled</a>
+            </nav>
+        </section>
+        <section>
+            <nav>
+                <a href="#" class="custom-anchor">shenanigans</a>
+                <a href="#" class="custom-anchor">looks professional</a>
+                <a href="#" class="custom-anchor">wristwatch promptness</a>
+                <a href="#" class="custom-anchor">That's so good</a>
+            </nav>
+        </section>
+        <section>
+            <aside>
+                <p class="mdc-typography--caption">
+                    By using the Services, Users agree to be bound by these Terms of Use, our Privacy Policy, all applicable laws and all conditions or policies referenced here. 
+                    We may amend the Terms at any time by posting a revised version of the Terms on our Services. 
+                    Access to or continued use of the Services after the effective date of the revised Terms constitutes your acceptance of the revised Terms.                    
+                </p>
+            </aside>
+        </section>
+    </footer>
+    <aside id="dialog-element" class="mdc-dialog" role="alertdialog" aria-labelledby="my-mdc-dialog-label" aria-describedby="my-mdc-dialog-description">
+        <div class="mdc-dialog__surface">
+            <header class="mdc-dialog__header">
+                <h2 id="dialog-label" class="mdc-dialog__header__title">
+                    Use Google's location service?
+                </h2>
+            </header>
+            <section id="my-mdc-dialog-description" class="mdc-dialog__body">
+                <!-- Provider Buttons -->
+                <section id="oauth-providers-signin-section">
+                    <div id="email" class="provider mdc-typography--subheading2 mdc-ripple-surface" tabindex="0">email</div>
+                    <div id="facebook" class="provider mdc-typography--subheading2 mdc-ripple-surface" tabindex="0">facebook</div>
+                    <div id="github" class="provider mdc-typography--subheading2 mdc-ripple-surface" tabindex="0">github</div>
+                    <div id="google" class="provider mdc-typography--subheading2 mdc-ripple-surface" tabindex="0">google</div>
+                    <div id="twitter" class="provider mdc-typography--subheading2 mdc-ripple-surface" tabindex="0">twitter</div>
+                </section>
+                <!-- Email Signin -->
+                <section id="email-signin-section">
+                    <label for="username">Email</label><br>
+                    <div class="mdc-text-field">
+                        <input type="text" id="username" class="mdc-text-field__input">
+                        <div class="mdc-text-field__bottom-line"></div>
+                    </div>
+                    <br>
+                    <label for="password">Password</label><br>
+                    <div class="mdc-text-field">
+                        <input type="password" id="password" class="mdc-text-field__input"required pattern=".{5,10}" required title="5 to 10 characters" onkeyup = "if (event.keyCode == 13)document.getElementById('dialog-accept-button').click()">
+                        <div class="mdc-text-field__bottom-line"></div>
+                    </div>                    
+                    <div id="vertical-spacer"></div>
+                    <div class="mdc-typography--caption">
+                        New users register <span id="register" class="pseudo-anchor">here</span> for an email authenticated account.
+                    </div>
+                    <br>
+                    <div class="mdc-typography--caption">
+                        Forget your password? Click <span id="password-reset" class="pseudo-anchor">here</span> to have a new one emailed to you.
+                    </div>
+                </section>
+                <!--Email Registration-->
+                <section id="registration" class="hidden">
+                    <div class="mdc-text-field">
+                        <input type="text" id="display-name-input" class="mdc-text-field__input" required pattern=".{2,}" title="Minimum 2 characters">
+                        <label class="mdc-text-field__label" for="display-name-input">display name</label>
+                    </div>
+                    <div class="mdc-text-field">
+                        <input type="email" id="email-input" class="mdc-text-field__input" required>
+                        <label class="mdc-text-field__label" for="email-input">email</label>
+                    </div>
+                    <br>
+                    <div class="mdc-text-field">
+                        <input type="password" id="password-input" class="mdc-text-field__input" required pattern=".{5,}" title="Minimum 5 characters">
+                        <label class="mdc-text-field__label" for="password-input">password</label>
+                    </div>
+                    <div class="mdc-text-field">
+                        <input type="password" id="password-verify-input" class="mdc-text-field__input" required aria-controls="reg-ver-pw-validation-msg" onkeyup = "if (event.keyCode == 13)document.getElementById('dialog-accept-button').click()">
+                        <label class="mdc-text-field__label" for="password-verify-input">re-enter password</label>
+                    </div>
+                </section>
+                <!-- Reset Display Name Section -->
+                <section id="display-name-reset-section" class="hidden">
+                    <p>Enter your new display name below.</p>
+                    <div class="mdc-text-field">
+                        <input type="text" id="new-display-name-input" class="mdc-text-field__input">
+                        <label class="mdc-text-field__label" for="new-display-name-input">Display Name</label>
+                    </div>
+                </section>
+                <!--Reset Email Section-->
+                <section id="email-reset-section">
+                    <p>A password reset link will be emailed to you.</p>
+                    <div class="mdc-text-field">
+                        <input type="text" id="reset-email-input" class="mdc-text-field__input">
+                        <label class="mdc-text-field__label" for="reset-email-input">email address</label>
+                    </div>
+                </section>
+                <!--Reset Password Section-->
+                <section id="password-reset-section">
+                    <div class="mdc-text-field">
+                        <input type="password" id="new-email-input" class="mdc-text-field__input">
+                        <label class="mdc-text-field__label" for="new-email-input">New email address</label>
+                    </div>
+                    <div class="mdc-text-field">
+                        <input type="password" id="verify-new-email-input" class="mdc-text-field__input">
+                        <label class="mdc-text-field__label" for="verify-new-email-input">Verify new email address</label>
+                    </div>
+                </section>
+            </section>
+            <footer class="mdc-dialog__footer">
+                <button type="button" class="mdc-button mdc-dialog__footer__button mdc-dialog__footer__button--cancel" id="dialog-decline-button">Decline</button>
+                <button type="button" class="mdc-button mdc-dialog__footer__button mdc-dialog__footer__button--accept" id="dialog-accept-button">Submit</button>
+            </footer>
+        </div>
+        <div class="mdc-dialog__backdrop"></div>
+    </aside>
+    <div class="mdc-snackbar" aria-live="assertive" aria-atomic="true" aria-hidden="true">
+        <div class="mdc-snackbar__text"></div>
+        <div class="mdc-snackbar__action-wrapper">
+            <button type="button" class="mdc-snackbar__action-button" style="color:#ffd600"></button>
+        </div>
+    </div>
+    <script src="//www.gstatic.com/firebasejs/4.6.2/firebase.js"></script>
+    <script src="//www.gstatic.com/firebasejs/4.6.0/firebase-firestore.js"></script>
+    <script src="mdc-web.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
