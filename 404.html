@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<!-- 404 Ft Google Developers Background by Ron Royston. Google Logo Property of Google/Alphabet Co. -->
+<html lang="en-us">
+	<head>
+		<meta charset="utf-8">
+		<title>Ron Royston, CCIE# 6824 Internetworking and Web Professional Services</title>
+		<link href='https://fonts.googleapis.com/css?family=Roboto:400,100,700|Raleway:300,600' rel='stylesheet' type='text/css'>
+		<link rel="apple-touch-icon" sizes="152x152" href="/favicons/apple-touch-icon.png">
+		<link rel="icon" type="image/png" href="/favicons/favicon-32x32.png" sizes="32x32">
+		<link rel="icon" type="image/png" href="/favicons/favicon-16x16.png" sizes="16x16">
+		<link rel="manifest" href="/favicons/manifest.json">
+		<link rel="mask-icon" href="/favicons/safari-pinned-tab.svg" color="#5bbad5">
+		<link rel="shortcut icon" href="/favicons/favicon.ico">
+		<meta name="msapplication-config" content="/favicons/browserconfig.xml">
+		<meta name="theme-color" content="#ffffff">
+        <style>
+            html { 
+                background: url('../media/google.jpg') no-repeat center center fixed; 
+                -webkit-background-size: cover;
+                -moz-background-size: cover;
+                -o-background-size: cover;
+                background-size: cover;
+                text-align:center;
+                font-family: 'Roboto', sans-serif;
+            }
+            p {
+                font-weight:700;
+                font-size: 300px;
+                font-size: 38vw;
+                color:#9e9e9e;
+                opacity:.2;
+                margin:auto;
+                cursor:auto;
+				-webkit-animation: fade 3s;
+				animation: fade;
+                animation-name: fade;
+                animation-duration: 3s;
+                animation-timing-function: linear;
+                animation-iteration-count: infinite;
+            }
+            p:hover {
+                cursor:default;
+            }
+			@-webkit-keyframes fade {
+			    0%   {opacity: .2;}
+			    25%  {opacity: .2;}
+			    50%  {opacity: .6;}
+			    75% {opacity: .4;}
+			    100%   {opacity: .2;}
+			}  
+			@keyframes fade {
+			    0%   {opacity: .2;}
+			    25%  {opacity: .2;}
+			    50%  {opacity: .6;}
+			    75% {opacity: .4;}
+			    100%   {opacity: .2;}
+			}
+        </style>
+	</head>
+	
+	<body>
+        <p id="msg">404</p>
+	</body>
+	<script>
+	    var msg = document.getElementById('msg');
+	    msg.onclick = function(){
+	        window.location="/";  
+	    };
+	</script>
+</html>

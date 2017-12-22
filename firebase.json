@@ -2,23 +2,26 @@
   "database": {
     "rules": "database.rules.json"
   },
+  "hosting": {
+    "public": "",
+    "cleanUrls": true,
+    "trailingSlash": false,
+    "ignore": [
+      "firebase.json",
+      "database.rules.json",
+      "firebase.indexes.json",
+      "firestore.rules",
+      "package.json",
+      "storage.rules",
+      "README.md",
+      "**/.*",
+      "**/node_modules/**",
+      "**/archive/**"
+    ]
+  },
   "firestore": {
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
-  },
-  "hosting": {
-    "public": "/",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
-    "rewrites": [
-      {
-        "source": "**",
-        "destination": "/index.html"
-      }
-    ]
   },
   "storage": {
     "rules": "storage.rules"

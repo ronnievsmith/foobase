@@ -1,17 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
-<!-- 
-    Created by Ron Royston, https://rack.pub, © 2018 MIT License
-    Available online at https://github.com/rhroyston/freebase
--->
-
+<!-- Do not place any comments or tags above here -->
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <!-- Mobile viewing enhancement -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Freebase - Firebase v4 Single Page Web App Template + MDC-Web + CSS Responsive Grid Layout." />
-    <title>Freebase - Firebase v4 Single Page Web App Template + MDC-Web + CSS Responsive Grid Layout.</title>
+    
+    <!--These set the text in the browser tab and some search engines-->
+    <meta name="description" content="Firebase v4 Web Full Working Boilerplate by Ron Royston rack.pub" />
+    <title>Ron Royston, Telecomputing Architect</title>
+    
     <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="/favicons/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon-32x32.png">
@@ -21,21 +20,19 @@
     <link rel="shortcut icon" href="/favicons/favicon.ico">
     <meta name="msapplication-config" content="/favicons/browserconfig.xml">
     <meta name="theme-color" content="#ffffff">
+    
+    <!--This is to display rich cards when link is shared on social media-->
+    <meta property="og:title" content="Ron Royston, Telecomputing Architect" />
+    <meta property="og:image" content="https://rack.pub/media/rack-share.jpg" />
+    <meta property="og:description" content="Firebase v4 Web Full Working Boilerplate by Ron Royston rack.pub" />
+    <meta property="og:url" content="https://rack.pub" />
+    <meta property="og:type" content="profile" />
+    
     <!-- Stylesheets -->
     <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:100,300,400,700,900">
     <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="stylesheet" href="mdc-web.css">
+    <link rel="stylesheet" href="mdc-web.min.css">
     <link rel="stylesheet" href="style.css" type="text/css">
-    <style>
-        :root {
-            --mdc-theme-primary: #2962ff;
-            --mdc-theme-accent: #ff6d00;
-        }
-        .mdc-ripple-surface.mdc-ripple-upgraded.mdc-button--primary::before,
-        .mdc-ripple-surface.mdc-ripple-upgraded.mdc-button--primary::after {
-            background-color: rgba(66, 66, 66, 0.08);
-        }        
-    </style>
 </head>
 <body class="mdc-typography">
     <!--Top Header Bar-->
@@ -43,12 +40,12 @@
         <nav>
             <section>
                 <div>
-                    <a href="/" alt="home" id="logo"><img src="/media/logo.png" height="36px"></a>
+                    <a href="/" alt="home" id="logo"><img src="/media/freebase-name-logo.png" height="36px"></a>
                 </div>
             </section>
             <section>
                 <div>
-                    <button class="mdc-button" id="sign-in-button">
+                    <button class="mdc-button" id="sign-in-button" data-mdc-auto-init="MDCRipple">
                         Sign In
                     </button>
                     <div class="mdc-menu-anchor">
@@ -76,14 +73,14 @@
         <section id="profile">
             <section id="main-tab-section">
                 <section id="dynamic-demo-toolbar">
-                    <nav id="dynamic-tab-bar" class="mdc-tab-bar mdc-tab-bar--indicator-accent" role="tablist">
+                    <nav id="profile-tab-bar" class="mdc-tab-bar mdc-tab-bar--indicator-accent" role="tablist">
                         <a role="tab" aria-controls="profile-panel-1" class="mdc-tab mdc-tab--active" href="#panel-1">Profile</a>
                         <a role="tab" aria-controls="profile-panel-2" class="mdc-tab" href="#panel-2">Activity</a>
                         <a role="tab" aria-controls="profile-panel-3" class="mdc-tab" href="#panel-3">Edit Profile</a>
                         <span class="mdc-tab-bar__indicator" style="background-color:#2962ff"></span>
                     </nav>
                 </section>
-                <div class="panels">
+                <div id="profile-panels">
                     <span class="panel active" id="profile-panel-1" role="tabpanel" aria-hidden="false">
                         <section>
                             <figure class="figure-profile">
@@ -101,22 +98,22 @@
                     </span>
                     <span class="panel" id="profile-panel-3" role="tabpanel" aria-hidden="true">
                         <section>
-                            <div class="mdc-text-field">
-                                <input type="text" id="new-display-name-input" class="mdc-text-field__input" required onkeyup = "if (event.keyCode == 13)document.getElementById('edit-profile-button').click()">
+                            <div class="mdc-text-field" data-mdc-auto-init="MDCTextField">
+                                <input disabled type="text" id="new-display-name-input" class="mdc-text-field__input" required onkeyup = "if (event.keyCode == 13)document.getElementById('edit-profile-button').click()">
                                 <label class="mdc-text-field__label" for="new-display-name-input">Display Name</label>
                                 <div class="mdc-text-field__bottom-line"></div>
                             </div>
                             <br>
-                            <div class="mdc-text-field">
-                                <input type="text" id="new-email-input" class="mdc-text-field__input" required onkeyup = "if (event.keyCode == 13)document.getElementById('edit-profile-button').click()">
+                            <div class="mdc-text-field" data-mdc-auto-init="MDCTextField">
+                                <input disabled type="text" id="new-email-input" class="mdc-text-field__input" required onkeyup = "if (event.keyCode == 13)document.getElementById('edit-profile-button').click()">
                                 <label class="mdc-text-field__label" for="new-email-input">Email</label>
                                 <div class="mdc-text-field__bottom-line"></div>
                             </div>
                             <section>
-                                <button class="mdc-button" id="edit-profile-button" style="float:right">
+                                <button disabled class="mdc-button mdc-button--raised" id="edit-profile-button" style="float:right" data-mdc-auto-init="MDCRipple">
                                     Submit
                                 </button>
-                                <button class="mdc-button red" id="change-password-button" style="color:red">
+                                <button disabled class="mdc-button mdc-button--raised red" id="change-password-button" style="color:red" data-mdc-auto-init="MDCRipple">
                                     Reset Password
                                 </button>
                             </section>
@@ -125,7 +122,7 @@
                 </div>
             </section>
         </section>
-        <section id="landing-page">
+        <section>
             <p class="mdc-typography--body1">
                 This is a single page application implementation standard starting point utilizing
                 <a href="//firebase.google.com/docs/web/setup" class="custom-anchor">Google's Firebase v4</a> software developers kit, SDK. 
@@ -152,56 +149,217 @@
                 For more information see <a href="//rack.pub/services" class="custom-anchor">rack.pub/services</a>.
             </p>
         </section>
-        <section>
+        <section id="home-section">
+			<div id="top-banner">
+			</div>
+			<h1 class="mdc-typography--display2">Freebase: Firebase v4 Web SPA</h1><br>
+			<div class="mdc-typography--title">
+                Standards Based Starting Point for Auth, Hosting, Firestore, & Cloud Functions
+            </div>
+			<p class="mdc-typography--body1">
+			    The <a class="custom-anchor" href="https://firebase.google.com/docs/web/setup">Firebase SDK for Web</a> implemented entirely in the browser handles cloud control. 
+                A framework free starting point for your next Firebase v4 for web project, or to simply take a test drive. 
+                <a href="//material.io/components" class="custom-anchor">Material Components Web</a> paired with 
+                <a href="//developer.mozilla.org/en-US/docs/Web/CSS/CSS_Grid_Layout" class="custom-anchor">CSS Grid layout</a> 
+                delivers a beautiful responsive UI web experience across all device types. 
+                Complete installation and setup instructions can be found 
+                <a class="custom-anchor" href="//github.com/rhroyston/freebase">here</a> on Github.
+            </p>
+            <h4 class="mdc-typography--subheading1">
+                Enough talk! Start pushing buttons, look under the hood at the source HTML, CSS, and Javascript. Take Firebase v4 for a free test drive!
+            </h4>
+            <span class="mdc-typography--caption">Firebase, Material Components, Google, Alphabet, and G-Unit are not affiliated with the Freebase project or Ron Royston or https://rack.pub or freebasing in general insofar as the author is responsible unless the author stands to receive money. 
+            Under no circumstances will the author pay out money or be subject to any law(s). Freebase has no affiliation with freebasing pure Columbian or Peruvian cocaine, nor cocaine produced in Germany nor any other jurisdiction. 
+            The author of Freebase warns every person against freebasing cocaine. Cocaine is widely known to be highly addictive and in effect a poison not unlike love itself. DO NOT FREEBASE COCAINE. 
+            RON ROYSTON DOES NOT FREEBASE COCAINE BUT GOOGLE'S ERIC SCHMIDT PROBABLY DOES BUT I DON'T REALLY HAVE ANY EVIDENCE SUPPORTING THIS IDEA - ONLY A HUNCH.</span>
+        </section>
+        <section id="about-section">
+            <div class="mdc-typography--title">About Section Coming Soon!</div>
             <p class="mdc-typography--body1">
-                TWO This is main page content. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                Please check back soon.
+            </p>
+        </section>        
+        <section id="admin-section">
+            <h1 class="mdc-typography--display1">Administrator Dashboard</h1>
+            
+            <section id="admin-tab-section">
+                <section id="admin-dynamic-demo-toolbar">
+                    <nav id="admin-tab-bar" class="mdc-tab-bar mdc-tab-bar--indicator-accent" role="tablist">
+                        <a role="tab" aria-controls="admin-profile-panel-1" class="mdc-tab mdc-tab--active" href="#admin-profile-panel-1">Quotes</a>
+                        <a role="tab" aria-controls="admin-profile-panel-2" class="mdc-tab" href="#admin-profile-panel-2">Images</a>
+                        <span class="mdc-tab-bar__indicator" style="background-color:#2962ff"></span>
+                    </nav>
+                </section>
+                <div id="admin-panels">
+                    <!--QUOTES-->
+                    <!--<span class="panel" id="admin-profile-panel-1" role="tabpanel" aria-hidden="true">-->
+                    <span class="panel active" id="admin-profile-panel-1" role="tabpanel" aria-hidden="false">
+                        <div class="textarea-wrapper">
+                            <div class="mdc-text-field mdc-text-field--textarea" data-mdc-auto-init="MDCTextField">
+                                <textarea id="admin-quotes-textarea" class="mdc-text-field__input" rows=8></textarea>
+                                <label for="admin-quotes-textarea" class="mdc-text-field__label">Quote Area</label>
+                            </div>
+                        </div>
+                    </span>
+                    <!--IMAGES-->
+                    <span class="panel" id="admin-profile-panel-2" role="tabpanel" aria-hidden="true">
+                        <div class="mdc-text-field wide-inputs" data-mdc-auto-init="MDCTextField">
+                            <input type="text" id="admin-image-input" class="mdc-text-field__input" required>
+                            <label for="admin-image-input" class="mdc-text-field__label">Image URL</label>
+                            <div class="mdc-text-field__bottom-line"></div>
+                        </div>
+                        <div class="flex-column flex-item">
+                            <button class="mdc-button mdc-button--raised input-masker" data-mdc-auto-init="MDCRipple">Upload Photo</button>
+                            <input type="file" id="admin-image-input-file" name="file" style="display: none" accept=".jpg, .jpeg, .png"/>
+                        </div>
+                    </span>
+                </div>
+                <div class="full-wide">
+                    <button class="mdc-button mdc-button--raised flex-item" id="admin-submit-button" data-mdc-auto-init="MDCRipple">
+                        Submit
+                    </button>
+                </div>
+            </section>
+        </section>
+        <section id="apps-section">
+            <div class="mdc-card app-card">
+                <section class="mdc-card__media md-card__16-9-media"></section>
+                <section class="mdc-card__primary">
+                    <h1 class="mdc-card__title mdc-card__title--large">German Engineering</h1>
+                    <h2 class="mdc-card__subtitle">Apparently the people of Germany have encountered aliens from outer space.</h2>
+                </section>
+                <section class="mdc-card__actions">
+                    <a class="mdc-button mdc-button--compact mdc-button--theme-dark mdc-card__action" data-mdc-auto-init="MDCRipple" href="#">Source</a>
+                    <a class="mdc-button mdc-button--compact mdc-button--theme-dark mdc-card__action" data-mdc-auto-init="MDCRipple" href="#">Launch</a>
+                </section>
+            </div>
+            
+            <div class="mdc-card app-card">
+                <section class="mdc-card__media md-card__16-9-media">
+                </section>
+                <section class="mdc-card__primary">
+                    <h1 class="mdc-card__title mdc-card__title--large">The Number One Combo</h1>
+                    <h2 class="mdc-card__subtitle">When in doubt just utter number one combo. Good results follow.</h2>
+                </section>
+                <section class="mdc-card__actions">
+                    <a class="mdc-button mdc-button--compact mdc-button--theme-dark mdc-card__action" data-mdc-auto-init="MDCRipple" href="#">Source</a>
+                    <a class="mdc-button mdc-button--compact mdc-button--theme-dark mdc-card__action" data-mdc-auto-init="MDCRipple" href="#">Launch</a>
+                </section>
+            </div>
+            
+            <div class="mdc-card app-card">
+                <section class="mdc-card__media md-card__16-9-media"></section>
+                <section class="mdc-card__primary">
+                    <h1 class="mdc-card__title mdc-card__title--large">Rick Astley</h1>
+                    <h2 class="mdc-card__subtitle">I still can't let you go. Therapy failed.</h2>
+                </section>
+                <section class="mdc-card__actions">
+                    <a class="mdc-button mdc-button--compact mdc-button--theme-dark mdc-card__action" data-mdc-auto-init="MDCRipple" href="#">Source</a>
+                    <a class="mdc-button mdc-button--compact mdc-button--theme-dark mdc-card__action" data-mdc-auto-init="MDCRipple" href="#">Launch</a>
+                </section>
+            </div>            
+            
+            <div class="mdc-card app-card">
+                <section class="mdc-card__media md-card__16-9-media"></section>
+                <section class="mdc-card__primary">
+                    <h1 class="mdc-card__title mdc-card__title--large">Peterbuilt</h1>
+                    <h2 class="mdc-card__subtitle">Big trucks that haul stuff from there to there</h2>
+                </section>
+                <section class="mdc-card__actions">
+                    <a class="mdc-button mdc-button--compact mdc-button--theme-dark mdc-card__action" data-mdc-auto-init="MDCRipple" href="#">Source</a>
+                    <a class="mdc-button mdc-button--compact mdc-button--theme-dark mdc-card__action" data-mdc-auto-init="MDCRipple" href="#">Launch</a>
+                </section>
+            </div>
+            
+            <div class="mdc-card app-card">
+                <section class="mdc-card__media md-card__16-9-media"></section>
+                <section class="mdc-card__primary">
+                    <h1 class="mdc-card__title mdc-card__title--large">Kale</h1>
+                    <h2 class="mdc-card__subtitle">An awful tasting herbivourous trainwreck of a food</h2>
+                </section>
+                <section class="mdc-card__actions">
+                    <a class="mdc-button mdc-button--compact mdc-button--theme-dark mdc-card__action" data-mdc-auto-init="MDCRipple" href="#">Source</a>
+                    <button class="mdc-button mdc-button--compact mdc-button--theme-dark mdc-card__action" data-mdc-auto-init="MDCRipple" disabled>Launch</button>
+                </section>
+            </div>
+            
+            <div class="mdc-card app-card">
+                <section class="mdc-card__media md-card__16-9-media"></section>
+                <section class="mdc-card__primary">
+                    <h1 class="mdc-card__title mdc-card__title--large">Jabba the Hut</h1>
+                    <h2 class="mdc-card__subtitle">Great Big Fat Thing</h2>
+                </section>
+                <section class="mdc-card__actions">
+                    <a class="mdc-button mdc-button--compact mdc-button--theme-dark mdc-card__action" data-mdc-auto-init="MDCRipple" href="#">Launch</a>
+                </section>
+            </div>
+        </section>
+        <section id="code-section">
+            <!--This section programatically populated-->
+        </section>
+        <section id="images-section">
+            <div class="mdc-typography--title">Images Section Coming Soon!</div>
+            <p class="mdc-typography--body1">
+                Please check back soon.
+            </p>
+        </section>
+        <section id="quotes-section">
+            <div class="mdc-typography--title">Quotes Section Coming Soon!</div>
+            <p class="mdc-typography--body1">
+                Please check back soon.
             </p>
         </section>
     </main>
     <nav>
         <section>
-            <a href="/" class="custom-anchor">Home</a>
-            <a href="#" class="custom-anchor">Section A-8</a>
-            <a href="#" class="custom-anchor">Section B</a>
-            <a href="#" class="custom-anchor">Hyper Linked</a>
-            <a href="#" class="custom-anchor">Hadron Collided</a>
+            <span data-link="/" class="nav-span">Home</span>
+            <span data-link="admin" class="nav-span admin-nav-anchor hidden">Admin</span>
+            <span data-link="apps" class="nav-span">Apps</span>
+            <span data-link="images" class="nav-span">Images</span>
+            <span data-link="quotes" class="nav-span">Quotes</span>
         </section>
     </nav>
     <aside>
         <section>
-            <p class="mdc-typography--body1">
-                The source is <a href="#" class="custom-anchor">here</a> on GitHub.
+            <p class="mdc-typography--body2">
+                <a class="twitter-timeline" data-height="600" data-theme="light" data-link-color="#2B7BB9" href="//twitter.com/Firebase">
+                    Tweets by Firebase
+                </a> 
+                <script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script>
             </p>
         </section>
     </aside>
     <footer>
         <section>
             <nav>
-                <a href="#" class="custom-anchor">This is a link to nowhere</a>
-                <a href="#" class="custom-anchor">And so is this</a>
-                <a href="#" class="custom-anchor">Fool me twice</a>
-                <a href="#" class="custom-anchor">I won't be fooled</a>
+                <a href="//www.ieee.org" class="custom-anchor">Inst. Electrical& Electronics Engineers (IEEE)</a>
+                <a href="//www.ietf.org/" class="custom-anchor">Internet Engineering Task Force (IETF)</a>
+                <a href="//www.internetsociety.org" class="custom-anchor">Internet Society</a>
+                <a href="//www.w3.org/" class="custom-anchor">World Wide Web Consortium (W3C)</a>
+                <a href="//whatwg.org" class="custom-anchor">Web Hypertext App Tech Wrkg Grp (WHATWG)</a>
+                
             </nav>
         </section>
         <section>
             <nav>
-                <a href="#" class="custom-anchor">shenanigans</a>
-                <a href="#" class="custom-anchor">looks professional</a>
-                <a href="#" class="custom-anchor">wristwatch promptness</a>
-                <a href="#" class="custom-anchor">That's so good</a>
+                <a href="//www.cloudfoundry.org" class="custom-anchor">Cloud Foundry</a>
+                <a href="//www.cncf.io" class="custom-anchor">Cloud Native Computing Foundation (CNCF)</a>
+                <a href="//developer.mozilla.org" class="custom-anchor">Mozilla Developer Network</a>
+                <a href="//msdn.microsoft.com" class="custom-anchor">Microsoft Developer Network (MSDN)</a>
+                <a href="//developer.mozilla.org/en-US/docs/Web/JavaScript/Guide" class="custom-anchor">JavaScript Guide</a>
             </nav>
         </section>
         <section>
             <aside>
                 <p class="mdc-typography--caption">
-                    By using the Services, Users agree to be bound by these Terms of Use, our Privacy Policy, all applicable laws and all conditions or policies referenced here. 
-                    We may amend the Terms at any time by posting a revised version of the Terms on our Services. 
-                    Access to or continued use of the Services after the effective date of the revised Terms constitutes your acceptance of the revised Terms.                    
+                    By using the Services, users agree to the <a href="/terms" class="custom-anchor">terms of use</a>, our <a href="/privacy" class="custom-anchor">privacy policy</a>, and all conditions or policies referenced therein. 
+                    We may amend the terms at any time by posting a revised version of the terms on our services.<br>
+                    <span class="contact">Contact: Ron Royston, ron@rack.pub</span>
                 </p>
             </aside>
         </section>
     </footer>
-    <aside id="dialog-element" class="mdc-dialog" role="alertdialog" aria-labelledby="my-mdc-dialog-label" aria-describedby="my-mdc-dialog-description">
+    <aside id="dialog-element" class="mdc-dialog" role="alertdialog" aria-labelledby="my-mdc-dialog-label" aria-describedby="my-mdc-dialog-description" data-mdc-auto-init="MDCDialog">
         <div class="mdc-dialog__surface">
             <header class="mdc-dialog__header">
                 <h2 id="dialog-label" class="mdc-dialog__header__title">
@@ -220,13 +378,13 @@
                 <!-- Email Signin -->
                 <section id="email-signin-section">
                     <label for="username">Email</label><br>
-                    <div class="mdc-text-field">
+                    <div class="mdc-text-field" data-mdc-auto-init="MDCTextField">
                         <input type="text" id="username" class="mdc-text-field__input">
                         <div class="mdc-text-field__bottom-line"></div>
                     </div>
                     <br>
                     <label for="password">Password</label><br>
-                    <div class="mdc-text-field">
+                    <div class="mdc-text-field" data-mdc-auto-init="MDCTextField">
                         <input type="password" id="password" class="mdc-text-field__input"required pattern=".{5,10}" required title="5 to 10 characters" onkeyup = "if (event.keyCode == 13)document.getElementById('dialog-accept-button').click()">
                         <div class="mdc-text-field__bottom-line"></div>
                     </div>                    
@@ -241,20 +399,20 @@
                 </section>
                 <!--Email Registration-->
                 <section id="registration" class="hidden">
-                    <div class="mdc-text-field">
+                    <div class="mdc-text-field" data-mdc-auto-init="MDCTextField">
                         <input type="text" id="display-name-input" class="mdc-text-field__input" required pattern=".{2,}" title="Minimum 2 characters">
                         <label class="mdc-text-field__label" for="display-name-input">display name</label>
                     </div>
-                    <div class="mdc-text-field">
+                    <div class="mdc-text-field" data-mdc-auto-init="MDCTextField">
                         <input type="email" id="email-input" class="mdc-text-field__input" required>
                         <label class="mdc-text-field__label" for="email-input">email</label>
                     </div>
                     <br>
-                    <div class="mdc-text-field">
+                    <div class="mdc-text-field" data-mdc-auto-init="MDCTextField">
                         <input type="password" id="password-input" class="mdc-text-field__input" required pattern=".{5,}" title="Minimum 5 characters">
                         <label class="mdc-text-field__label" for="password-input">password</label>
                     </div>
-                    <div class="mdc-text-field">
+                    <div class="mdc-text-field" data-mdc-auto-init="MDCTextField">
                         <input type="password" id="password-verify-input" class="mdc-text-field__input" required aria-controls="reg-ver-pw-validation-msg" onkeyup = "if (event.keyCode == 13)document.getElementById('dialog-accept-button').click()">
                         <label class="mdc-text-field__label" for="password-verify-input">re-enter password</label>
                     </div>
@@ -262,34 +420,34 @@
                 <!-- Reset Display Name Section -->
                 <section id="display-name-reset-section" class="hidden">
                     <p>Enter your new display name below.</p>
-                    <div class="mdc-text-field">
-                        <input type="text" id="new-display-name-input" class="mdc-text-field__input">
-                        <label class="mdc-text-field__label" for="new-display-name-input">Display Name</label>
+                    <div class="mdc-text-field" data-mdc-auto-init="MDCTextField">
+                        <input type="text" id="dialog-new-display-name-input" class="mdc-text-field__input">
+                        <label class="mdc-text-field__label" for="dialog-new-display-name-input">Display Name</label>
                     </div>
                 </section>
                 <!--Reset Email Section-->
                 <section id="email-reset-section">
                     <p>A password reset link will be emailed to you.</p>
-                    <div class="mdc-text-field">
+                    <div class="mdc-text-field" data-mdc-auto-init="MDCTextField">
                         <input type="text" id="reset-email-input" class="mdc-text-field__input">
                         <label class="mdc-text-field__label" for="reset-email-input">email address</label>
                     </div>
                 </section>
                 <!--Reset Password Section-->
                 <section id="password-reset-section">
-                    <div class="mdc-text-field">
-                        <input type="password" id="new-email-input" class="mdc-text-field__input">
-                        <label class="mdc-text-field__label" for="new-email-input">New email address</label>
+                    <div class="mdc-text-field" data-mdc-auto-init="MDCTextField">
+                        <input type="password" id="dialog-new-email-input" class="mdc-text-field__input">
+                        <label class="mdc-text-field__label" for="dialog-new-email-input">New email address</label>
                     </div>
-                    <div class="mdc-text-field">
+                    <div class="mdc-text-field" data-mdc-auto-init="MDCTextField">
                         <input type="password" id="verify-new-email-input" class="mdc-text-field__input">
                         <label class="mdc-text-field__label" for="verify-new-email-input">Verify new email address</label>
                     </div>
                 </section>
             </section>
             <footer class="mdc-dialog__footer">
-                <button type="button" class="mdc-button mdc-dialog__footer__button mdc-dialog__footer__button--cancel" id="dialog-decline-button">Decline</button>
-                <button type="button" class="mdc-button mdc-dialog__footer__button mdc-dialog__footer__button--accept" id="dialog-accept-button">Submit</button>
+                <button type="button" class="mdc-button mdc-dialog__footer__button mdc-dialog__footer__button--cancel" data-mdc-auto-init="MDCRipple" id="dialog-decline-button">Decline</button>
+                <button type="button" class="mdc-button mdc-dialog__footer__button mdc-dialog__footer__button--accept" data-mdc-auto-init="MDCRipple" id="dialog-accept-button">Submit</button>
             </footer>
         </div>
         <div class="mdc-dialog__backdrop"></div>
@@ -300,9 +458,9 @@
             <button type="button" class="mdc-snackbar__action-button" style="color:#ffd600"></button>
         </div>
     </div>
-    <script src="//www.gstatic.com/firebasejs/4.6.2/firebase.js"></script>
-    <script src="//www.gstatic.com/firebasejs/4.6.0/firebase-firestore.js"></script>
-    <script src="mdc-web.js"></script>
+    <script src="//www.gstatic.com/firebasejs/4.8.1/firebase.js"></script>
+    <script src="//www.gstatic.com/firebasejs/4.6.2/firebase-firestore.js"></script>
+    <script src="mdc-web.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

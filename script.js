@@ -1,10 +1,13 @@
-var intrest = (function() {
-    // object to expose as public properties and methods
-    var pub = {};
-    //reference document once
+/*
+Created by Ron Royston, https://rack.pub
+https://github.com/rhroyston/freebase
+License: MIT 2018
+*/
+
+(function() {
     var doc = document;
     
-    // Google Firebase
+    // Google Firebase /////////////////////////////////////////////////////////////
     var getArg = getArg();
     var config = {
         apiKey: "AIzaSyBw2_TQE1VwfB5ARc1l76tMN4l-1Vza5xU",
@@ -19,41 +22,17 @@ var intrest = (function() {
     var oobCode = getArg['oobCode'];
     var providers = doc.getElementsByClassName('provider');
     firebase.initializeApp(config);
-    function returnPhotoURL(type){
-        //types are raw or css
-        //if the user does not have a photoURL let's try and get one from gravatar
-        if (!firebase.auth().currentUser.photoURL) {
-            //first we have to see if user han an email
-            if(firebase.auth().currentUser.email){
-                //set sign-in-button background image to gravatar url
-                if(type === 'css'){
-                    return "url('" + getGravatar(firebase.auth().currentUser.email, 48) + "')";
-                } else {
-                    return getGravatar(firebase.auth().currentUser.email, 48);
-                }
-            } else {
-                //let's put up a generic image
-                if(type === 'css'){
-                    return "url('/media/character.png')";
-                } else {
-                    return '/media/character.png';
-                }
-            }
-        } else {
-            if(type === 'css'){
-                return "url('" + firebase.auth().currentUser.photoURL + "')";
-            } else {
-                return firebase.auth().currentUser.photoURL;
-            }
-        }
-    }
     firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
             if (doc.getElementById("sign-in-button")) {
                 doc.getElementById("sign-in-button").classList.add("hidden");
             }
-            doc.getElementById("account-section-image").style.backgroundImage = returnPhotoURL('css');
-            doc.getElementById("account-section-image").classList.remove("hidden");
+            if (doc.getElementById("account-section-image")){
+                returnPhotoURL().then(function(value){
+                    doc.getElementById("account-section-image").style.backgroundImage = "url('" + value + "')";
+                });
+                doc.getElementById("account-section-image").classList.remove("hidden");                
+            }
             switch (user.providerData[0].providerId) {
                 case 'facebook':
                 case 'github':
@@ -67,20 +46,17 @@ var intrest = (function() {
             }
         }
         else { //USER IS NOT SIGNED IN
-            //DISABLE BUTTON AND LINKS
-            //hide edit icons
-            //var editIcons = doc.getElementsByClassName("edit-icons");
-            // for (var i = 0; i < editIcons.length; i++) {
-            //     editIcons[i].classList.add("hidden");
-            // }
             //show login button
             if (doc.getElementById("sign-in-button")) {
                 doc.getElementById("sign-in-button").classList.remove("hidden");
             }
-            //hide account photo
-            doc.getElementById("account-section-image").classList.add("hidden");
+            if (doc.getElementById("account-section-image")) {
+                //hide account photo
+                doc.getElementById("account-section-image").classList.add("hidden");                
+            }
             //dialogReset();
         }
+        processAccess();
     });
     switch (mode) {
         case 'resetPassword':
@@ -112,6 +88,8 @@ var intrest = (function() {
                     docRef.set(o);
                 }
                 toast(firebase.auth().currentUser.displayName + " is in.");
+            }).catch(function(error) {
+                toast(error.message);
             });
         }).catch(function(error) {
             toast(error.message);
@@ -413,7 +391,72 @@ var intrest = (function() {
         var size = size || 80;
         return 'https://www.gravatar.com/avatar/' + MD5(email) + '.jpg?s=' + size;
     }
-    //QUERY PARAMETER HANDLER FUNCTIONS
+    function handleFileSelect(evt) {
+        evt.stopPropagation();
+        evt.preventDefault();
+        var file = evt.target.files[0];
+        var metadata = {
+            'contentType': file.type
+        };
+        // Push to child path.
+        // Upload file and metadata to the object 'images/mountains.jpg'
+        var uploadTask;
+        
+        var target = firebase.storage().ref().child('images/');
+        
+        switch (evt.target.id) {
+            case "admin-articles-image-file":
+                uploadTask = target.child(file.name).put(file, metadata);
+            break;
+        }
+        // Listen for state changes, errors, and completion of the upload.
+        uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, // or 'state_changed'
+        function(snapshot) {
+            // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+            var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            console.log('Upload is ' + progress + '% done');
+            switch (snapshot.state) {
+                case firebase.storage.TaskState.PAUSED: // or 'paused'
+                    console.log('Upload is paused');
+                    break;
+                case firebase.storage.TaskState.RUNNING: // or 'running'
+                    console.log('Upload is running');
+                    break;
+            }
+        },
+        function(error) {
+            // A full list of error codes is available at
+            // https://firebase.google.com/docs/storage/web/handle-errors
+            switch (error.code) {
+                case 'storage/unauthorized':
+                    // User doesn't have permission to access the object
+                    console.log(error.code);
+                    break;
+                    
+                case 'storage/canceled':
+                    // User canceled the upload
+                    console.log(error.code);
+                    break;
+                    
+                case 'storage/unknown':
+                    // Unknown error occurred, inspect error.serverResponse
+                    console.log(error.code);
+                    break;
+            }
+        },
+        function() {
+            // Upload completed successfully, now we can get the download URL
+            var downloadURL = uploadTask.snapshot.downloadURL;
+            evt.target.parentElement.firstElementChild.blur();
+            switch (evt.target.id) {
+                case "admin-image-input-file":
+                    doc.getElementById("admin-image-input").value = downloadURL;
+                    doc.getElementById("admin-image-input").parentElement.classList.add("mdc-text-field--upgraded");
+                    doc.getElementById("admin-image-input").nextElementSibling.classList.add("mdc-text-field__label--float-above");
+                break;
+            }
+        });
+    }
     function handleResetPassword(oobCode) {
         // Verify the password reset code is valid.
         firebase.auth().verifyPasswordResetCode(oobCode).then(function(email) {
@@ -480,19 +523,6 @@ var intrest = (function() {
             toast(error.message);
         });
     }
-    function newEmail(newEmail) {
-        //this should email validate the 
-
-    }
-    function newPassword(newPassword) {
-        //UPDATEs PASSWORD WITHOUT EMAIL VERIFICATION
-        console.log("newPassword ran");
-        firebase.auth().currentUser.updatePassword(newPassword).then(function(value) {
-            toast('Password Updated');
-        }).catch(function(error) {
-            toast(error.message);
-        });
-    }
     function newPasswordViaEmailReset(email) {
         firebase.auth().sendPasswordResetEmail(firebase.auth().currentUser.email).then(function(value) {
             toast('Check email to complete action');
@@ -534,15 +564,42 @@ var intrest = (function() {
                 toast(error.message);
                 console.log(error.message);
             });
-    }    
+    }
+    function returnPhotoURL(){
+        return new Promise(function(resolve, reject){
+            var img = new Image();
+            //if the user does not have a photoURL let's try and get one from gravatar
+            if (!firebase.auth().currentUser.photoURL) {
+                //first we have to see if user han an email
+                if(firebase.auth().currentUser.email){
+                    //set sign-in-button background image to gravatar url
+                    img.addEventListener('load', function() {
+                        resolve (getGravatar(firebase.auth().currentUser.email, 48));
+                    }, false);
+                    img.addEventListener('error', function() {
+                        resolve ('//rack.pub/media/fallback-avatar.jpg');
+                    }, false);            
+                    img.src = getGravatar(firebase.auth().currentUser.email, 48);
+                } else {
+                    resolve ('//rack.pub/media/fallback-avatar.jpg');
+                }
+            } else {
+                img.addEventListener('load', function() {
+                    resolve (firebase.auth().currentUser.photoURL);
+                }, false);
+                img.addEventListener('error', function() {
+                    resolve ('https://rack.pub/media/fallback-avatar.jpg');
+                }, false);      
+                img.src = firebase.auth().currentUser.photoURL;
+            }
+        });
+    }
     function signout() {
         firebase.auth().signOut().then(function() {
             toast('Signed Out');
             redirect('/');
             clearMainSections();
-            doc.getElementById("page-title").innerHTML = "Freebase";
-            doc.getElementById("page-title-section").classList.remove("hidden");
-            doc.getElementById("landing-page").classList.remove("hidden");            
+            showHomeSection();          
         }, function(error) {
             toast('Sign out Failed');
         });
@@ -562,49 +619,120 @@ var intrest = (function() {
         });
     }
     
-    // Google MDC-Web UI Library
+    // Google MDC-Web UI Library ///////////////////////////////////////////////////
     var mdc = window.mdc;
     window.mdc.autoInit();
-    var accountMenu = new mdc.menu.MDCSimpleMenu(doc.getElementById("account-menu"));
-    var buttons = doc.querySelectorAll('.mdc-button');
-    var dialog = new mdc.dialog.MDCDialog(doc.getElementById("dialog-element"));
-    var dynamicTabBar = window.dynamicTabBar = new mdc.tabs.MDCTabBar(document.querySelector('#dynamic-tab-bar'));
-    var panels = document.querySelector('.panels');
+    var panels = doc.querySelector('#profile-panels');
+    var adminPanels = doc.querySelector('#admin-panels');
+    var adminTabBar;
+    var profileTabBar;
     var pseudoAnchors = doc.querySelectorAll('.pseudo-anchor');
-    var ripples = doc.querySelectorAll('.mdc-ripple-surface');
-    var snackbar = new mdc.snackbar.MDCSnackbar(doc.querySelector('.mdc-snackbar'));
-    mdc.textField.MDCTextField.attachTo(doc.querySelector('.mdc-text-field'));
-    var toggles = doc.querySelectorAll('.mdc-icon-toggle');
-    dynamicTabBar.tabs.forEach(function(tab) {
-        tab.preventDefaultOnClick = true;
-    });
-    dynamicTabBar.listen('MDCTabBar:change', function({ detail: tabs }) {
-        var nthChildIndex = tabs.activeTabIndex;
-        updatePanel(nthChildIndex);
-    });
-    for (var i = 0; i < buttons.length; i++) {
-        mdc.ripple.MDCRipple.attachTo(buttons[i]);
+    if(doc.getElementById("account-menu")){
+        var accountMenu = new mdc.menu.MDCSimpleMenu(doc.getElementById("account-menu"));
     }
-    for (var i = 0; i < ripples.length; i++) {
-        mdc.ripple.MDCRipple.attachTo(ripples[i]);
-    }    
-    for (var i = 0; i < toggles.length; i++) {
-        mdc.iconToggle.MDCIconToggle.attachTo(toggles[i]);
+    if(doc.getElementById("dialog-element")){
+        var dialog = new mdc.dialog.MDCDialog(doc.getElementById("dialog-element"));
+        //var dialog = doc.getElementById("dialog-element");
+        //var dialog = window.dialog;
+        dialog.listen('MDCDialog:accept', function() {
+            //we need to figure out which section is open
+            try {
+                switch (getActiveDialogSection()) {
+                    case 'email-signin-section':
+                        firebase.auth().signInWithEmailAndPassword(doc.getElementById("username").value, doc.getElementById("password").value).then(function(value) {
+                            //Success. Email User logged in.
+                            //dialog.close();
+                            var docRef = firebase.firestore().collection("users").doc(firebase.auth().currentUser.uid);
+                            var o = {};
+                            docRef.get().then(function(thisDoc) {
+                                if (thisDoc.exists) {
+                                    //user is already there, write only last login
+                                    o.lastLoginDate = Date.now();
+                                    docRef.update(o);
+                                } else {
+                                    //new user
+                                    o.displayName = firebase.auth().currentUser.displayName;
+                                    o.accountCreatedDate = Date.now();
+                                    o.lastLoginDate = Date.now();
+                                    // Send it
+                                    docRef.set(o);
+                                }
+                                toast(firebase.auth().currentUser.displayName + " is in.");
+                            });
+                        }).catch(function(error) {
+                            toast(error.message);
+                        });                    
+                        break;
+                    case 'registration':
+                        var email = doc.getElementById("email-input").value;
+                        var displayName = doc.getElementById("display-name-input").value;
+                        var password = doc.getElementById("password-input").value;
+                        registerPasswordUser(email, displayName, password, "");
+                        dialog.close();
+                        break;
+                    case 'email-reset-section':
+                        console.log("email-reset-section FIRED");
+                        break;
+                    case 'password-reset-section':
+                        //newPassword(doc.getElementById("verify-new-email-input").value);
+                        console.log("password-reset-section fired accept");
+                        verifyPassword(oobCode, doc.getElementById("verify-new-email-input").value, firebase.auth().currentUser.email);
+                        break;
+                }
+            }
+            catch (e) {
+                toast(e);
+            }
+        });
+        dialog.listen('MDCDialog:cancel', function() {
+            console.log('canceled');
+            resetDialogSections();
+        });
     }
-    for (var i = 0; i < pseudoAnchors.length; i++) {
-        pseudoAnchors[i].addEventListener("click", firePseudoAnchor);
+    if(doc.querySelector('#admin-tab-bar')){
+        adminTabBar = window.adminTabBar = new mdc.tabs.MDCTabBar(document.querySelector('#admin-tab-bar'));
+        adminTabBar.tabs.forEach(function(tab) {
+            tab.preventDefaultOnClick = true;
+        });
+        adminTabBar.listen('MDCTabBar:change', function({ detail: tabs }) {
+            var nthChildIndex = tabs.activeTabIndex;
+            updatePanel(nthChildIndex);
+        });
+        function updatePanel(index) {
+            var activePanel = adminPanels.querySelector('.panel.active');
+            if (activePanel) {
+                activePanel.classList.remove('active');
+            }
+            var newActivePanel = adminPanels.querySelector('.panel:nth-child(' + (index + 1) + ')');
+            if (newActivePanel) {
+                newActivePanel.classList.add('active');
+            }
+        }        
     }
-    function updatePanel(index) {
-        var activePanel = panels.querySelector('.panel.active');
-        if (activePanel) {
-            activePanel.classList.remove('active');
-        }
-        var newActivePanel = panels.querySelector('.panel:nth-child(' + (index + 1) + ')');
-        if (newActivePanel) {
-            newActivePanel.classList.add('active');
-        }
+    if(doc.querySelector('.mdc-snackbar')){
+        var snackbar = new mdc.snackbar.MDCSnackbar(doc.querySelector('.mdc-snackbar'));
     }
-    var toast = function(msg) {
+    if(doc.querySelector('#profile-tab-bar')){
+        profileTabBar = window.profileTabBar = new mdc.tabs.MDCTabBar(document.querySelector('#profile-tab-bar'));
+        profileTabBar.tabs.forEach(function(tab) {
+            tab.preventDefaultOnClick = true;
+        });
+        profileTabBar.listen('MDCTabBar:change', function({ detail: tabs }) {
+            var nthChildIndex = tabs.activeTabIndex;
+            updatePanel(nthChildIndex);
+        });
+        function updatePanel(index) {
+            var activePanel = panels.querySelector('.panel.active');
+            if (activePanel) {
+                activePanel.classList.remove('active');
+            }
+            var newActivePanel = panels.querySelector('.panel:nth-child(' + (index + 1) + ')');
+            if (newActivePanel) {
+                newActivePanel.classList.add('active');
+            }
+        }        
+    }
+    function toast(msg) {
         //hack fix. Toast was sticking. This timer fixed it.
         setTimeout(function() {
             msg = String(msg);
@@ -617,203 +745,281 @@ var intrest = (function() {
             });
         }, 500);
     };
-    dialog.listen('MDCDialog:accept', function() {
-        //we need to figure out which section is open
-        try {
-            switch (getActiveDialogSection()) {
-                case 'email-signin-section':
-                    firebase.auth().signInWithEmailAndPassword(doc.getElementById("username").value, doc.getElementById("password").value).then(function(value) {
-                        //Success. Email User logged in.
-                        //dialog.close();
-                        var docRef = firebase.firestore().collection("users").doc(firebase.auth().currentUser.uid);
-                        var o = {};
-                        docRef.get().then(function(thisDoc) {
-                            if (thisDoc.exists) {
-                                //user is already there, write only last login
-                                o.lastLoginDate = Date.now();
-                                docRef.update(o);
-                            } else {
-                                //new user
-                                o.displayName = firebase.auth().currentUser.displayName;
-                                o.accountCreatedDate = Date.now();
-                                o.lastLoginDate = Date.now();
-                                // Send it
-                                docRef.set(o);
-                            }
-                            toast(firebase.auth().currentUser.displayName + " is in.");
-                        });
-                    }).catch(function(error) {
-                        toast(error.message);
-                    });                    
-                    break;
-                case 'registration':
-                    var email = doc.getElementById("email-input").value;
-                    var displayName = doc.getElementById("display-name-input").value;
-                    var password = doc.getElementById("password-input").value;
-                    registerPasswordUser(email, displayName, password, "");
-                    dialog.close();
-                    break;
-                case 'email-reset-section':
-                    console.log("email-reset-section FIRED");
-                    break;
-                case 'password-reset-section':
-                    //newPassword(doc.getElementById("verify-new-email-input").value);
-                    console.log("password-reset-section fired accept");
-                    verifyPassword(oobCode, doc.getElementById("verify-new-email-input").value, firebase.auth().currentUser.email);
-                    break;
-            }
-        }
-        catch (e) {
-            toast(e);
-        }
-    });
-    dialog.listen('MDCDialog:cancel', function() {
-        console.log('canceled');
-        resetDialogSections();
-    });    
     
-    //DOM Scripting
+    //DOM Scripting ////////////////////////////////////////////////////////////////
+    var section = getArg['section'];
+    var adminNavAnchors = doc.getElementsByClassName("admin-nav-anchor");
+    var inputMaskers = doc.getElementsByClassName("input-masker");
+    var adminSubmitButton = doc.getElementById("admin-submit-button");
+    var navAnchors = doc.getElementsByClassName("nav-span");
+    adminSubmitButton.addEventListener("click", function(evt){
+        switch(evt.target.parentElement.parentElement.querySelector(".active").id) {
+            
+            case "admin-profile-panel-1":
+                //set quote to firestore, get textarea and push it to /quotes/
+                //window.mdc.autoInit();
+                firebase.firestore().collection("quotes").add({
+                    image: doc.getElementById("admin-quotes-textarea").value,
+                    created: Date.now()
+                })
+                .then(function(docRef) {
+                    toast("Quote Saved");
+                })
+                .catch(function(error) {
+                    toast("Error adding quote in firestore: ", error);
+                });
+                
+            break;
+            case "admin-profile-panel-2":
+                //set image to firestore at /images //admin-image-input
+                firebase.firestore().collection("images").add({
+                    image: doc.getElementById("admin-image-input").value,
+                    created: Date.now()
+                })
+                .then(function(docRef) {
+                    toast("Image saved");
+                })
+                .catch(function(error) {
+                    toast("Error adding image in firestore: ", error);
+                });
+            break;
+            case "admin-profile-panel-3":
+
+            break;
+        }
+    });    
+    for (var i = 0; i < pseudoAnchors.length; i++) {
+        pseudoAnchors[i].addEventListener("click", firePseudoAnchor);
+    }
+    
     //On initial Page Load
+    attachClickListenerToNavAnchors();
+    attachKeyupListenerToInputElements();
     clearMainSections();
-    doc.getElementById("page-title").innerHTML = "Freebase";
-    doc.getElementById("page-title-section").classList.remove("hidden");
-    doc.getElementById("landing-page").classList.remove("hidden");
-    if (providers) {
+    showHomeSection();
+
+    if(doc.getElementById("account-menu")){
+        doc.getElementById("account-menu").addEventListener('MDCSimpleMenu:selected', function(evt) {
+            var choice = evt.detail.item.textContent.trim();
+            try {
+                if(choice === "Profile"){
+                    clearMainSections();
+                    doc.getElementById("page-title-section").classList.add("hidden");
+                    doc.getElementById("profile").classList.remove("hidden");
+                    profileTabBar.layout();
+                    returnPhotoURL().then(function(value){
+                        doc.querySelector("#profile-panel-1 > section > figure > img").setAttribute("src", value);
+                    });
+                    doc.querySelector("#profile-panel-1 > section > figure > img").setAttribute("alt", firebase.auth().currentUser.displayName);
+                    doc.querySelector("#profile-panel-1 > section > figure > figcaption").innerHTML = firebase.auth().currentUser.displayName;
+                    
+                    firebase.firestore().collection("users").doc(firebase.auth().currentUser.uid).get().then(function(ref) {
+                        if (ref.exists) {
+                            doc.querySelector("#profile-panel-2 > section > span").innerHTML = new Date(ref.data().lastLoginDate).toLocaleDateString();
+                            var newDisplayNameInput = doc.getElementById("new-display-name-input");
+                            var newEmailInput = doc.getElementById("new-email-input");
+                            newDisplayNameInput.value = firebase.auth().currentUser.displayName;
+                            newEmailInput.value = firebase.auth().currentUser.email;
+                            
+                            var newDisplayNameInputParent = newDisplayNameInput.parentElement;
+                            var newEmailInputParent = newEmailInput.parentElement;
+                            
+                            mdc.textField.MDCTextField.attachTo(doc.querySelector('.mdc-text-field'));
+                            
+                            newDisplayNameInput.parentElement.classList.add("mdc-text-field--upgraded");
+                            newDisplayNameInput.nextElementSibling.classList.add("mdc-text-field__label--float-above");
+                            
+                            newEmailInput.parentElement.classList.add("mdc-text-field--upgraded");
+                            newEmailInput.nextElementSibling.classList.add("mdc-text-field__label--float-above"); 
+                            
+                            if(firebase.auth().currentUser.providerData[0].providerId === "password"){
+                                newDisplayNameInput.disabled = false;
+                                newEmailInput.disabled = false;
+                                newDisplayNameInput.parentElement.classList.remove("mdc-text-field--disabled");
+                                newEmailInput.parentElement.classList.remove("mdc-text-field--disabled");
+                                doc.getElementById("change-password-button").disabled = false;
+                                doc.getElementById("edit-profile-button").disabled = false;
+                            } else {
+                                newDisplayNameInput.disabled = true;
+                                newEmailInput.disabled = true;
+                                newDisplayNameInput.parentElement.classList.add("mdc-text-field--disabled");
+                                newEmailInput.parentElement.classList.add("mdc-text-field--disabled");
+                                doc.getElementById("change-password-button").disabled = true;
+                                doc.getElementById("edit-profile-button").disabled = true;
+                            }
+                        } else {
+                            doc.querySelector("#profile-panel-2 > section > span").innerHTML = "not found";
+                        }
+                    }).catch(function(error) {
+                        console.log("Error getting document:", error);
+                    });
+                }
+                if(choice === "Sign Out"){
+                    signout();
+                }
+            }
+            catch (e) {
+                toast(e);
+            }        
+        });
+    }
+    if(doc.getElementById("account-section-image")){
+        doc.getElementById("account-section-image").addEventListener("click", function(evt){
+            accountMenu.open = !accountMenu.open;
+        }, false);
+    }
+    if(doc.getElementById("code-section")){
+        var githubSection = doc.getElementById("code-section");
+    }
+    if(doc.getElementById("change-password-button")){
+        doc.getElementById("change-password-button").addEventListener("click", function(evt){
+            newPasswordViaEmailReset(firebase.auth().currentUser.email);
+        });
+    }
+    if(doc.getElementById("edit-profile-button")){
+        doc.getElementById("edit-profile-button").addEventListener("click", function(evt){
+            var newDisplayName = doc.getElementById("dialog-new-display-name-input").value;
+            var newEmail = doc.getElementById("new-email-input").value;
+            
+            //if display name input is different than currentUser.displayName we need to update it
+            if(newDisplayName !== firebase.auth().currentUser.displayName){
+                //update Firebase Auth Subsystem
+                firebase.auth().currentUser.updateProfile({
+                    displayName: newDisplayName
+                }).then(function() {
+                    //done
+                }, function(error) {
+                    console.log(error.message);
+                });
+                //update Firestore
+                firebase.firestore().collection("users").doc(firebase.auth().currentUser.uid).update({
+                    displayName: newDisplayName
+                })
+                .then(function() {
+                    toast("All set " + newDisplayName);
+                })
+                .catch(function(error) {
+                    console.error("Error writing document: ", error);
+                });            
+            }
+            
+            //if email input is different from currentUser.email we need to update it
+            if(newEmail !== firebase.auth().currentUser.email){
+                firebase.auth().currentUser.updateEmail(newEmail).then(function(value) {
+                    firebase.auth().currentUser.sendEmailVerification().then(function(value) {
+                        toast('Check ' + firebase.auth().currentUser.email + ' to validate change.');
+                        signout();
+                    });
+                }).catch(function(error) {
+                    toast(error.message);
+                });
+            }
+        });
+    }
+    if(doc.getElementById("sign-in-button")){
+        doc.getElementById("sign-in-button").addEventListener("click", function(evt){
+            resetDialogSections();
+            doc.getElementById("dialog-label").innerHTML = "Choose Sign In Method";
+            doc.getElementById("dialog-accept-button").classList.add("hidden");
+            doc.getElementById("oauth-providers-signin-section").classList.add("active");
+            doc.getElementById("oauth-providers-signin-section").classList.remove("hidden");
+            
+            dialog.lastFocusedTarget = evt.target;
+            dialog.show(); 
+        });
+    }
+    if(inputMaskers.length > 0){
+        for (var i = 0; i < inputMaskers.length; i++) {
+            inputMaskers[i].addEventListener("click", inputMaskHandler);
+            inputMaskers[i].nextElementSibling.addEventListener("change", handleFileSelect, false);
+        }
+    }
+    if(providers){
         for (var i = 0; i < providers.length; i++) {
             providers[i].addEventListener("click", fireAuth);
         }
     }
-        
-    // For Signed In User State, This Menu Opens
-    doc.getElementById("account-menu").addEventListener('MDCSimpleMenu:selected', function(evt) {
-        var choice = evt.detail.item.textContent.trim();
-        try {
-            if(choice === "Profile"){
-                clearMainSections();
-                doc.getElementById("page-title-section").classList.add("hidden");
-                doc.getElementById("profile").classList.remove("hidden");
-                dynamicTabBar.layout();
-                
-                doc.querySelector("#profile-panel-1 > section > figure > img").setAttribute("src", returnPhotoURL());
-                doc.querySelector("#profile-panel-1 > section > figure > img").setAttribute("alt", firebase.auth().currentUser.displayName);
-                doc.querySelector("#profile-panel-1 > section > figure > figcaption").innerHTML = firebase.auth().currentUser.displayName;
-                
-                firebase.firestore().collection("users").doc(firebase.auth().currentUser.uid).get().then(function(ref) {
-                    if (ref.exists) {
-                        doc.querySelector("#profile-panel-2 > section > span").innerHTML = new Date(ref.data().lastLoginDate).toLocaleDateString();
-                        
-                        var newDisplayNameInput = doc.getElementById("new-display-name-input");
-                        var newEmailInput = doc.getElementById("new-email-input");
-                        newDisplayNameInput.value = firebase.auth().currentUser.displayName;
-                        newEmailInput.value = firebase.auth().currentUser.email;
-                        
-                        var newDisplayNameInputParent = newDisplayNameInput.parentElement;
-                        var newEmailInputParent = newEmailInput.parentElement;
-                        
-                        // mdc.textfield.MDCTextfield.attachTo(newDisplayNameInput);
-                        // mdc.textfield.MDCTextfield.attachTo(newEmailInput);
-                        mdc.textField.MDCTextField.attachTo(document.querySelector('.mdc-text-field'));
-                        
-                        newDisplayNameInput.parentElement.classList.add("mdc-text-field--upgraded");
-                        newDisplayNameInput.nextElementSibling.classList.add("mdc-text-field__label--float-above");
-                        
-                        newEmailInput.parentElement.classList.add("mdc-text-field--upgraded");
-                        newEmailInput.nextElementSibling.classList.add("mdc-text-field__label--float-above");
-                    } else {
-                        doc.querySelector("#profile-panel-2 > section > span").innerHTML = "not found";
-                    }
-                }).catch(function(error) {
-                    console.log("Error getting document:", error);
-                });
-            }
-            if(choice === "Sign Out"){
-                signout();
+    if(section){
+        unboldNavAnchors();
+        for (var i = 0; i < navAnchors.length; i++) {
+            if (navAnchors[i].dataset.link === section){
+                navAnchors[i].classList.add("bold");
             }
         }
-        catch (e) {
-            toast(e);
-        }        
-    });
-    doc.getElementById("edit-profile-button").addEventListener("click", function(evt){
-        var newDisplayName = doc.getElementById("new-display-name-input").value;
-        var newEmail = doc.getElementById("new-email-input").value;
         
-        //if display name input is different than currentUser.displayName we need to update it
-        if(newDisplayName !== firebase.auth().currentUser.displayName){
-            //update Firebase Auth Subsystem
-            firebase.auth().currentUser.updateProfile({
-                displayName: newDisplayName
-            }).then(function() {
-                //done
-            }, function(error) {
-                console.log(error.message);
+        clearMainSections();        
+        switch (section){
+            case ("about"):
+                doc.getElementById("about-section").classList.remove("hidden");
+            break;
+            case ("admin"):
+            isAdmin().then(function(res){
+                if (res === true) {
+                    doc.getElementById("admin-section").classList.remove("hidden");
+                    adminTabBar.layout();
+                } else {
+                    window.location.href = '/';
+                }
             });
-            //update Firestore
-            firebase.firestore().collection("users").doc(firebase.auth().currentUser.uid).update({
-                displayName: newDisplayName
-            })
-            .then(function() {
-                toast("All set " + newDisplayName);
-            })
-            .catch(function(error) {
-                console.error("Error writing document: ", error);
-            });            
+            break;
+            case ("apps"):
+                doc.getElementById("apps-section").classList.remove("hidden");
+            break;
+            case ("images"):
+                doc.getElementById("images-section").classList.remove("hidden");
+            break;
+            case ("quotes"):
+                doc.getElementById("quotes-section").classList.remove("hidden");
+            break;
         }
-        
-        //if email input is different from currentUser.email we need to update it
-        if(newEmail !== firebase.auth().currentUser.email){
-            firebase.auth().currentUser.updateEmail(newEmail).then(function(value) {
-                firebase.auth().currentUser.sendEmailVerification().then(function(value) {
-                    toast('Check ' + firebase.auth().currentUser.email + ' to validate change.');
-                    signout();
-                });
-            }).catch(function(error) {
-                toast(error.message);
-            });
-        }
-    });
-    doc.getElementById("change-password-button").addEventListener("click", function(evt){
-        newPasswordViaEmailReset(firebase.auth().currentUser.email);
-    });
-    doc.getElementById("sign-in-button").addEventListener("click", function(evt){
-        resetDialogSections();
-        doc.getElementById("dialog-label").innerHTML = "Choose Sign In Method";
-        doc.getElementById("dialog-accept-button").classList.add("hidden");
-        doc.getElementById("oauth-providers-signin-section").classList.add("active");
-        doc.getElementById("oauth-providers-signin-section").classList.remove("hidden");
-        
-        dialog.lastFocusedTarget = evt.target;
-        dialog.show(); 
-    });
-    doc.getElementById("account-section-image").addEventListener("click", function(evt){
-        accountMenu.open = !accountMenu.open;
-    }, false);        
-        
-    function clearMainSections(){
-        var mainBodySections = doc.querySelectorAll("main > section");
-        for (var i = 0; i < mainBodySections.length; i++) {
-            mainBodySections[i].classList.add("hidden");
+    }    
+
+    function applyAdminView(){
+        for (var i = 0; i < adminNavAnchors.length; i++) {
+            adminNavAnchors[i].classList.remove("hidden");
         }
     }
-    function getActiveDialogSection(){
-        var dialogBody = doc.querySelector(".mdc-dialog__body");
-        var sections = dialogBody.getElementsByTagName("section");
-        for (var i = 0, section; section = sections[i]; i++) {
-            if(section.classList.contains("active")){
-                return(section.id);
+    function attachClickListenerToNavAnchors(){
+        var navLinks = doc.querySelectorAll("body > nav > section > .nav-span");
+        for (var i = 0; i < navLinks.length; i++) {
+            navLinks[i].addEventListener("click", clickHandler);
+        }
+        
+        function clickHandler() {
+            var sec = this.dataset.link;
+            unboldNavAnchors();
+            this.classList.add("bold");
+            clearMainSections();
+            if(sec === "/"){
+                window.history.pushState(null, null, sec);
+                showHomeSection();
+            } else {
+                if(sec != "services"){
+                    window.history.pushState(null, null, "?section=" + sec.toLowerCase());
+                }
+            }
+            switch(sec){
+                case ("/"):
+                break;
+                case ("about"):
+                    doc.getElementById("about-section").classList.remove("hidden");
+                break;
+                case ("admin"):
+                    doc.getElementById("admin-section").classList.remove("hidden");
+                    adminTabBar.layout();
+                break;
+                case ("apps"):
+                    doc.getElementById("apps-section").classList.remove("hidden");
+                break;
+                case ("images"):
+                    doc.getElementById("images-section").classList.remove("hidden");
+                break;
+                case ("quotes"):
+                    doc.getElementById("quotes-section").classList.remove("hidden");
+                break;
             }
         }
     }
-    function resetDialogSections(){
-        var dialogBodySections = doc.querySelectorAll(".mdc-dialog__body > section");
-        for (var i = 0; i < dialogBodySections.length; i++) {
-            dialogBodySections[i].classList.remove("active");
-            dialogBodySections[i].classList.add("hidden");
-        }
-    }
-        
-    // enables submit button iif inputs meet validation contraints
-    attachKeyupListenerToInputElements();
     function attachKeyupListenerToInputElements(){
         var inputs = doc.querySelectorAll('input');
         for (var i = 0; i < inputs.length; i++) {
@@ -842,9 +1048,233 @@ var intrest = (function() {
                 }
             }
         }
+    }    
+    function clearMainSections(){
+        var mainBodySections = doc.querySelectorAll("main > section");
+        for (var i = 0; i < mainBodySections.length; i++) {
+            mainBodySections[i].classList.add("hidden");
+            //mainBodySections[i].style.display = "none";
+        }
+        //clean out programatically filled in code section
+        doc.getElementById("code-section").innerHTML = "";
+        if (doc.getElementById("code-section-more-button")){
+            console.log("full wide seen");
+            var codeSectionMoreButton = doc.getElementById("code-section-more-button");
+            codeSectionMoreButton.parentNode.removeChild(codeSectionMoreButton);
+        }
+
     }
-    //API
-    return pub;
-}());    
+    function dropCard(n, updated, lang, desc, stars, forks){
+        var cardDiv = doc.createElement("div");
+        cardDiv.classList.add("mdc-card","github-card");
+        var primarySection = doc.createElement("section");
+        primarySection.classList.add("mdc-card__primary");
+        var cardAvatar = doc.createElement("div");
+        cardAvatar.classList.add("card__avatar");
+        primarySection.appendChild(cardAvatar);
+        var cardH1 = doc.createElement("h1");
+        cardH1.classList.add("mdc-card__title");
+        cardH1.innerHTML = n;
+        primarySection.appendChild(cardH1);
+        var cardH2 = doc.createElement("h1");
+        cardH2.classList.add("mdc-card__subtitle");
+        cardH2.innerHTML = updated;
+        primarySection.appendChild(cardH2);
+        var mediaSection = doc.createElement("section");
+        mediaSection.classList.add("mdc-card__media");
+        var supportingSection = doc.createElement("section");
+        supportingSection.classList.add("mdc-card__supporting-text");
+        supportingSection.innerHTML = desc;
+        var actionsSection = doc.createElement("section");
+        actionsSection.classList.add("mdc-card__actions");
+        var githubFlair = doc.createElement("div");
+        githubFlair.classList.add("github-flair");
+        var githubImage = doc.createElement("div");
+        githubImage.classList.add("github-image");
+        var starImage = doc.createElement("div");
+        starImage.classList.add("star-image");
+        var starsCount = doc.createElement("div");
+        starsCount.classList.add("stars-count");
+        starsCount.innerHTML = stars;
+        var forkImage = doc.createElement("div");
+        forkImage.classList.add("fork-image");
+        var forksCount = doc.createElement("div");
+        forksCount.classList.add("forks-count");
+        forksCount.innerHTML = forks;
+        githubFlair.appendChild(githubImage);
+        githubFlair.appendChild(starImage);
+        githubFlair.appendChild(starsCount);
+        githubFlair.appendChild(forkImage);
+        githubFlair.appendChild(forksCount);
+        var githubCardAction = doc.createElement("div");
+        githubCardAction.classList.add("github-card-action");
+        var githubButton = doc.createElement("button");
+        githubButton.classList.add("mdc-button", "mdc-button--compact", "mdc-card__action");
+        githubButton.innerHTML = "source";
+        githubCardAction.appendChild(githubButton);
+        actionsSection.appendChild(githubFlair);
+        actionsSection.appendChild(githubCardAction);
+        if(lang){
+            switch (lang.toLowerCase()){
+                case("javascript") :
+                    cardDiv.classList.add("background-blue-500");
+                    cardAvatar.classList.add("js-theme");
+                    actionsSection.classList.add("background-blue-700");
+                break;
+                case("html") :
+                    cardDiv.classList.add("background-green-500");
+                    cardAvatar.classList.add("html-theme");
+                    actionsSection.classList.add("background-green-700");
+                break;
+                case("php") :
+                    cardDiv.classList.add("background-orange-500");
+                    cardAvatar.classList.add("php-theme");
+                    actionsSection.classList.add("background-orange-700");
+                break;
+            }        
+        } else {
+            cardDiv.classList.add("background-purple-500");
+            cardAvatar.classList.add("app-theme");
+            actionsSection.classList.add("background-purple-700");
+        }
+    
+        cardDiv.appendChild(primarySection);
+        cardDiv.appendChild(mediaSection);
+        cardDiv.appendChild(supportingSection);
+        cardDiv.appendChild(actionsSection);
+        githubSection.appendChild(cardDiv);
+    }
+    function dropGitHubRepos(){
+        getJSON('https://api.github.com/users/rhroyston/repos').then(function(res) {
+            if (res) {
+                res.sort(compare).reverse();
+                var qty = 6;
+                for (var i = 0; i < qty; i++) {
+                    //this is where we get the data and handle it
+                    var n = res[i]["name"];
+                    var updated = Date.parse(res[i]["updated_at"]);
+                    updated = "Updated " + clock.what.month(updated) + " " + clock.what.day(updated) + ", " + clock.what.year(updated);
+                    var lang = res[i]["language"];
+                    var desc = res[i]["description"];
+                    var stars = res[i]["stargazers_count"]; 
+                    var forks = res[i]["forks_count"];
+                    dropCard(n,updated,lang,desc,stars,forks);
+                }
+                //add 100% div then '...more' button-link
+                var myDiv = doc.createElement("div");
+                myDiv.classList.add("full-wide");
+                myDiv.id = "code-section-more-button";
+                githubSection.appendChild(myDiv);
+                var btn = doc.createElement("a");
+                // btn.classList.add("mdc-button", "flex-item");
+                btn.classList.add("mdc-button", "float-right");
+                btn.href = "//github.com/rhroyston";
+                btn.innerHTML = "...more";
+                myDiv.appendChild(btn);
+                githubSection.parentNode.insertBefore(myDiv, githubSection.nextSibling);
+                //githubSection.appendChild(myDiv);                
+                function compare(a, b) {
+                    if (a.stargazers_count < b.stargazers_count)
+                        return -1;
+                    if (a.stargazers_count > b.stargazers_count)
+                        return 1;
+                    return 0;
+                }
+            } else {
+                console.log("response not found");
+            }
+        }).catch(function(error) {
+            console.log("Error getting document:", error);
+        });
+    }    
+    function getActiveDialogSection(){
+        var dialogBody = doc.querySelector(".mdc-dialog__body");
+        var sections = dialogBody.getElementsByTagName("section");
+        for (var i = 0, section; section = sections[i]; i++) {
+            if(section.classList.contains("active")){
+                return(section.id);
+            }
+        }
+    }
+    function getJSON(url){
+    	return new Promise(function(resolve, reject) {
+    		var xhr = new XMLHttpRequest();
+    		xhr.open('get', url, true);
+    		//xhr.responseType = 'json';
+    		xhr.onload = function() {
+    			var status = xhr.status;
+    			if (status == 200) {
+    				//var serverResponse = JSON.parse(xml.responseText);
+    				resolve(JSON.parse(xhr.response));
+    			}
+    			else {
+    				reject(status);
+    			}
+    		};
+    		xhr.send();
+    	});
+    };
+    function inputMaskHandler(){
+        adminUrlTargetElement = this.nextElementSibling;
+        this.nextElementSibling.click();
+    }
+    function isAdmin(){
+        return new Promise(function(resolve, reject){
+            var docRef = firebase.firestore().collection("validator");
+            docRef.get().then(function(result) {
+                if (result) {
+                    resolve (true);
+                }
+            }).catch(function(error) {
+                resolve (false);
+            });
+        });
+    }
+    function processAccess(){
+        isAdmin().then(function(res){
+            if (res === true) {
+                applyAdminView();
+            } else {
+                removeAdminView();
+            }            
+        });
+    }
+    function removeAdminView(){
+        for (var i = 0; i < adminNavAnchors.length; i++) {
+            adminNavAnchors[i].classList.add("hidden");
+        }
+    }
+    function resetDialogSections(){
+        var dialogBodySections = doc.querySelectorAll(".mdc-dialog__body > section");
+        for (var i = 0; i < dialogBodySections.length; i++) {
+            dialogBodySections[i].classList.remove("active");
+            dialogBodySections[i].classList.add("hidden");
+        }
+    }
+    function showHomeSection(){
+        if(doc.getElementById("home-section") && doc.getElementById("page-title")){
+            doc.getElementById("page-title").innerHTML = "";
+            //doc.getElementById("page-title-section").classList.remove("hidden");
+            doc.getElementById("home-section").classList.remove("hidden");
+            doc.querySelector("body > nav > section > span:nth-of-type(1)").classList.add("bold");            
+        }
+    }
+    function unboldNavAnchors(){
+        var navLinks = doc.querySelectorAll("body > nav > section > .nav-span");
+        for (var i = 0; i < navLinks.length; i++) {
+            navLinks[i].classList.remove("bold");
+        }
+    }
+
+    /*
+    clock.js v0.1 - Simple datetime add-on tools for JavaScript
+    Created by Ron Royston, https://rack.pub
+    https://github.com/rhroyston/clock-js
+    License: MIT
+    */
+    var clock=function(){function d(){this.time=function(a){var b=h(a);if(b){var c=new Date(b),d=c.getHours(),e=("0"+c.getMinutes()).slice(-2);return d<12?d+":"+e+" AM":d-12+":"+e+" PM"}},this.weekday=function(b){var c=h(b);if(c)for(var d=new Date(c),e=0;e<a.length;e++)if(d.getDay()===e)return a[e]},this.day=function(a){var b=h(a);if(b)return new Date(b).getDate()},this.month=function(a){var c=h(a);if(c)for(var d=new Date(c),e=0;e<b.length;e++)if(d.getMonth()===e)return b[e]},this.year=function(a){var b=h(a);if(b)return new Date(b).getUTCFullYear()}}function e(){this.years=31536e6,this.months=2628002880,this.weeks=6048e5,this.days=864e5,this.hours=36e5,this.minutes=6e4,this.seconds=1e3}function f(a){var b=Math.floor(a/31536e3);return b>1?b+" years":(b=Math.floor(a/2592e3),b>1?b+" months":(b=Math.floor(a/86400),b>1?b+" days":(b=Math.floor(a/3600),b>1?b+" hours":(b=Math.floor(a/60),b>1?b+" minutes":Math.floor(a)+" seconds"))))}function h(a){var b="clock.js error",d={name:b,message:"expected unix timestamp as argument"};try{if(null==a||""==a)return c.now;if("string"==typeof a){if(a=a.replace(/\s/g,""),!/^\d+$/.test(a))throw d;a=Number(a)}if(new Date(a).getTime()>0)return a;throw d}catch(a){return console.log(a.name+" : "+a.message),null}}var a=["sunday","monday","tuesday","wednesday","thursday","friday","saturday"],b=["january","february","march","april","may","june","july","august","september","october","november","december"],c={};return c.what=new d,c.unit=new e,Object.defineProperty(c,"now",{get:function(){return Date.now()}}),Object.defineProperty(c,"time",{get:function(){var a=new Date,b=a.getHours(),c=("0"+a.getMinutes()).slice(-2);return b<12?b+":"+c+" AM":12==b?b+":"+c+" PM":b-12+":"+c+" PM"}}),Object.defineProperty(c,"weekday",{get:function(){for(var b=new Date,c=0;c<a.length;c++)if(b.getDay()===c)return a[c]}}),Object.defineProperty(c,"day",{get:function(){return(new Date).getDate()}}),Object.defineProperty(c,"month",{get:function(){for(var a=new Date,c=0;c<b.length;c++)if(a.getMonth()===c)return b[c]}}),Object.defineProperty(c,"year",{get:function(){return(new Date).getUTCFullYear()}}),c.since=function(a){var b=h(a);if(b){var c=Math.floor((new Date-b)/1e3);return f(c)}},c.until=function(a){var b=h(a);if(b){var c=Math.floor((b-new Date)/1e3);return f(c)}},c}();
+}());
+    
+    
     
     
