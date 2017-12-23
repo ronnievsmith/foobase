@@ -442,7 +442,19 @@ h1 {
     grid-auto-rows: minmax(280px, 312px);
     grid-gap: 12px 12px;
 }
-
+#images-section {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-auto-rows: minmax(280px, 312px);
+    grid-gap: 12px 12px;
+}
+.image-card{
+    background-size: cover;
+    background-repeat: no-repeat;    
+}
+.image-card > section {
+    background-color: rgba(250,250,250,.5);
+}
 .app-card > .mdc-card__primary > .mdc-card__title, .mdc-card__subtitle {
     line-height: 1.2em;
     height: 2.4em;
@@ -451,13 +463,10 @@ h1 {
 .app-card > .mdc-card__actions{
     justify-content: flex-end;
 }
-        
 .github-card > .mdc-card__primary {
     position: relative;
 }
 .md-card__16-9-media {
-    background-size: cover;
-    background-repeat: no-repeat;
     flex: 1 1 auto;
     background-image: url(/media/google-orange.jpg);
     background-size: cover;
@@ -619,7 +628,6 @@ h1 {
     color: #616161;
     background:#bdbdbd;
 }
-
 #vertical-spacer{
     margin: 12px 0px 12px 0px;
 }

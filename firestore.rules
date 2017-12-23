@@ -1,7 +1,10 @@
 service cloud.firestore {
   match /databases/{database}/documents {
     match /{document=**} {
-      allow read, write;
+      allow read, write: if request.auth.uid == "rK46IUjmF3P3RUYdpgnHLudHBtk2" || request.auth.uid == "lhgxsIt803f1PxZwjENgvWmw4o92" || request.auth.uid == "Z6O1mPEoe8a5FAYegBwUias7bYH2" || request.auth.uid == "8FwcgfTAk6T6VOWmNWu5I47BI7g1";
+    }
+    match /users/{userId} {
+      allow read, write: if request.auth.uid == userId || request.auth.uid == "8FwcgfTAk6T6VOWmNWu5I47BI7g1";
     }
   }
 }

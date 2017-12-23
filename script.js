@@ -401,11 +401,10 @@ License: MIT 2018
         // Push to child path.
         // Upload file and metadata to the object 'images/mountains.jpg'
         var uploadTask;
-        
         var target = firebase.storage().ref().child('images/');
-        
+        console.log(evt.target.id);
         switch (evt.target.id) {
-            case "admin-articles-image-file":
+            case "admin-image-input-file":
                 uploadTask = target.child(file.name).put(file, metadata);
             break;
         }
@@ -946,34 +945,9 @@ License: MIT 2018
                 navAnchors[i].classList.add("bold");
             }
         }
-        
-        clearMainSections();        
-        switch (section){
-            case ("about"):
-                doc.getElementById("about-section").classList.remove("hidden");
-            break;
-            case ("admin"):
-            isAdmin().then(function(res){
-                if (res === true) {
-                    doc.getElementById("admin-section").classList.remove("hidden");
-                    adminTabBar.layout();
-                } else {
-                    window.location.href = '/';
-                }
-            });
-            break;
-            case ("apps"):
-                doc.getElementById("apps-section").classList.remove("hidden");
-            break;
-            case ("images"):
-                doc.getElementById("images-section").classList.remove("hidden");
-            break;
-            case ("quotes"):
-                doc.getElementById("quotes-section").classList.remove("hidden");
-            break;
-        }
-    }    
-
+        clearMainSections();
+        sectionHandler(section);
+    }
     function applyAdminView(){
         for (var i = 0; i < adminNavAnchors.length; i++) {
             adminNavAnchors[i].classList.remove("hidden");
@@ -984,40 +958,45 @@ License: MIT 2018
         for (var i = 0; i < navLinks.length; i++) {
             navLinks[i].addEventListener("click", clickHandler);
         }
-        
         function clickHandler() {
-            var sec = this.dataset.link;
+            var section = this.dataset.link;
             unboldNavAnchors();
             this.classList.add("bold");
             clearMainSections();
-            if(sec === "/"){
-                window.history.pushState(null, null, sec);
+            if(section === "/"){
+                window.history.pushState(null, null, section);
                 showHomeSection();
             } else {
-                if(sec != "services"){
-                    window.history.pushState(null, null, "?section=" + sec.toLowerCase());
-                }
+                window.history.pushState(null, null, "?section=" + section.toLowerCase());
             }
-            switch(sec){
-                case ("/"):
-                break;
-                case ("about"):
-                    doc.getElementById("about-section").classList.remove("hidden");
-                break;
-                case ("admin"):
-                    doc.getElementById("admin-section").classList.remove("hidden");
-                    adminTabBar.layout();
-                break;
-                case ("apps"):
-                    doc.getElementById("apps-section").classList.remove("hidden");
-                break;
-                case ("images"):
-                    doc.getElementById("images-section").classList.remove("hidden");
-                break;
-                case ("quotes"):
-                    doc.getElementById("quotes-section").classList.remove("hidden");
-                break;
-            }
+            sectionHandler(section);
+        }
+    }
+    function sectionHandler(section){
+        switch (section){
+            case ("/"):
+                showHomeSection();
+            break;
+            case ("admin"):
+                isAdmin().then(function(res){
+                    if (res === true) {
+                        doc.getElementById("admin-section").classList.remove("hidden");
+                        adminTabBar.layout();
+                    } else {
+                        window.location.href = '/';
+                    }
+                });
+            break;
+            case ("apps"):
+                doc.getElementById("apps-section").classList.remove("hidden");
+            break;
+            case ("images"):
+                doc.getElementById("images-section").classList.remove("hidden");
+                dropImages();
+            break;
+            case ("quotes"):
+                doc.getElementById("quotes-section").classList.remove("hidden");
+            break;
         }
     }
     function attachKeyupListenerToInputElements(){
@@ -1143,6 +1122,28 @@ License: MIT 2018
         cardDiv.appendChild(supportingSection);
         cardDiv.appendChild(actionsSection);
         githubSection.appendChild(cardDiv);
+    }
+    // <div class="mdc-card app-card">
+    //     <section class="mdc-card__media md-card__16-9-media"></section>
+    //     <section class="supportngtext">
+    //     </section>
+    // </div>    
+    function dropImages(){
+        firebase.firestore().collection("images").get().then(function(querySnapshot) {
+            //var thisImgElement;
+            var thisTime;
+            querySnapshot.forEach(function(snap) {
+                thisTime = snap.data().created;
+                var imageCardDiv = doc.createElement("div");
+                imageCardDiv.classList.add("mdc-card","image-card");
+                imageCardDiv.style.backgroundImage = "url(" + snap.data().image + ")";
+                var imageCardText = doc.createElement("section");
+                imageCardText.classList.add("mdc-card__supporting-text");
+                imageCardText.innerHTML = clock.what.month(thisTime) + " " + clock.what.day(thisTime) + ", " + clock.what.year(thisTime);
+                imageCardDiv.appendChild(imageCardText);
+                doc.getElementById("images-section").appendChild(imageCardDiv);
+            });
+        });        
     }
     function dropGitHubRepos(){
         getJSON('https://api.github.com/users/rhroyston/repos').then(function(res) {

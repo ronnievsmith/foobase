@@ -20,7 +20,9 @@ This is an excellent starting point for your next Firebase web project.
    - Material Components UI
    - photoURL resolution upgrades
  - [Gravatar](//gravatar.com) fallback for all accounts with an email address
+ - Fallback avatar for 404 photoURL's
  - Promise based functions aligned with Firebase documentation
+ - Simple JavaScript URL Argument Getter / Setter w Switch
 
 ### Installation
 
