@@ -758,8 +758,8 @@ License: MIT 2018
                 //set quote to firestore, get textarea and push it to /quotes/
                 //window.mdc.autoInit();
                 firebase.firestore().collection("quotes").add({
-                    image: doc.getElementById("admin-quotes-textarea").value,
-                    created: Date.now()
+                    quote: doc.getElementById("admin-quotes-textarea").value,
+                    stored: Date.now()
                 })
                 .then(function(docRef) {
                     toast("Quote Saved");
@@ -773,7 +773,7 @@ License: MIT 2018
                 //set image to firestore at /images //admin-image-input
                 firebase.firestore().collection("images").add({
                     image: doc.getElementById("admin-image-input").value,
-                    created: Date.now()
+                    stored: Date.now()
                 })
                 .then(function(docRef) {
                     toast("Image saved");
@@ -866,9 +866,6 @@ License: MIT 2018
         doc.getElementById("account-section-image").addEventListener("click", function(evt){
             accountMenu.open = !accountMenu.open;
         }, false);
-    }
-    if(doc.getElementById("code-section")){
-        var githubSection = doc.getElementById("code-section");
     }
     if(doc.getElementById("change-password-button")){
         doc.getElementById("change-password-button").addEventListener("click", function(evt){
@@ -991,11 +988,17 @@ License: MIT 2018
                 doc.getElementById("apps-section").classList.remove("hidden");
             break;
             case ("images"):
+                doc.getElementById("images-section").innerHTML = "";
                 doc.getElementById("images-section").classList.remove("hidden");
                 dropImages();
             break;
             case ("quotes"):
+                
+                doc.getElementById("page-title-section").innerHTML = "Quotes";
+                doc.getElementById("page-title-section").classList.remove("hidden");
+                doc.getElementById("quotes-section").innerHTML = "";
                 doc.getElementById("quotes-section").classList.remove("hidden");
+                dropQuotes();
             break;
         }
     }
@@ -1043,97 +1046,32 @@ License: MIT 2018
         }
 
     }
-    function dropCard(n, updated, lang, desc, stars, forks){
-        var cardDiv = doc.createElement("div");
-        cardDiv.classList.add("mdc-card","github-card");
-        var primarySection = doc.createElement("section");
-        primarySection.classList.add("mdc-card__primary");
-        var cardAvatar = doc.createElement("div");
-        cardAvatar.classList.add("card__avatar");
-        primarySection.appendChild(cardAvatar);
-        var cardH1 = doc.createElement("h1");
-        cardH1.classList.add("mdc-card__title");
-        cardH1.innerHTML = n;
-        primarySection.appendChild(cardH1);
-        var cardH2 = doc.createElement("h1");
-        cardH2.classList.add("mdc-card__subtitle");
-        cardH2.innerHTML = updated;
-        primarySection.appendChild(cardH2);
-        var mediaSection = doc.createElement("section");
-        mediaSection.classList.add("mdc-card__media");
-        var supportingSection = doc.createElement("section");
-        supportingSection.classList.add("mdc-card__supporting-text");
-        supportingSection.innerHTML = desc;
-        var actionsSection = doc.createElement("section");
-        actionsSection.classList.add("mdc-card__actions");
-        var githubFlair = doc.createElement("div");
-        githubFlair.classList.add("github-flair");
-        var githubImage = doc.createElement("div");
-        githubImage.classList.add("github-image");
-        var starImage = doc.createElement("div");
-        starImage.classList.add("star-image");
-        var starsCount = doc.createElement("div");
-        starsCount.classList.add("stars-count");
-        starsCount.innerHTML = stars;
-        var forkImage = doc.createElement("div");
-        forkImage.classList.add("fork-image");
-        var forksCount = doc.createElement("div");
-        forksCount.classList.add("forks-count");
-        forksCount.innerHTML = forks;
-        githubFlair.appendChild(githubImage);
-        githubFlair.appendChild(starImage);
-        githubFlair.appendChild(starsCount);
-        githubFlair.appendChild(forkImage);
-        githubFlair.appendChild(forksCount);
-        var githubCardAction = doc.createElement("div");
-        githubCardAction.classList.add("github-card-action");
-        var githubButton = doc.createElement("button");
-        githubButton.classList.add("mdc-button", "mdc-button--compact", "mdc-card__action");
-        githubButton.innerHTML = "source";
-        githubCardAction.appendChild(githubButton);
-        actionsSection.appendChild(githubFlair);
-        actionsSection.appendChild(githubCardAction);
-        if(lang){
-            switch (lang.toLowerCase()){
-                case("javascript") :
-                    cardDiv.classList.add("background-blue-500");
-                    cardAvatar.classList.add("js-theme");
-                    actionsSection.classList.add("background-blue-700");
-                break;
-                case("html") :
-                    cardDiv.classList.add("background-green-500");
-                    cardAvatar.classList.add("html-theme");
-                    actionsSection.classList.add("background-green-700");
-                break;
-                case("php") :
-                    cardDiv.classList.add("background-orange-500");
-                    cardAvatar.classList.add("php-theme");
-                    actionsSection.classList.add("background-orange-700");
-                break;
-            }        
-        } else {
-            cardDiv.classList.add("background-purple-500");
-            cardAvatar.classList.add("app-theme");
-            actionsSection.classList.add("background-purple-700");
-        }
-    
-        cardDiv.appendChild(primarySection);
-        cardDiv.appendChild(mediaSection);
-        cardDiv.appendChild(supportingSection);
-        cardDiv.appendChild(actionsSection);
-        githubSection.appendChild(cardDiv);
+
+    function dropQuotes(){
+        firebase.firestore().collection("quotes").get().then(function(querySnapshot) {
+            //var thisImgElement;
+            //var thisTime;
+            querySnapshot.forEach(function(snap) {
+                if(snap.data().quote){
+                    //thisTime = snap.data().stored;
+                    var quoteDiv = doc.createElement("div");
+                    quoteDiv.classList.add("quote-div");
+                    //quoteDiv.style.backgroundImage = "url(" + snap.data().image + ")";
+                    var quoteSpan = doc.createElement("span");
+                    quoteSpan.classList.add("flex-item","quote-span");
+                    quoteSpan.innerHTML = snap.data().quote;
+                    quoteDiv.appendChild(quoteSpan);
+                    doc.getElementById("quotes-section").appendChild(quoteDiv);    
+                }
+            });
+        });  
     }
-    // <div class="mdc-card app-card">
-    //     <section class="mdc-card__media md-card__16-9-media"></section>
-    //     <section class="supportngtext">
-    //     </section>
-    // </div>    
     function dropImages(){
         firebase.firestore().collection("images").get().then(function(querySnapshot) {
             //var thisImgElement;
             var thisTime;
             querySnapshot.forEach(function(snap) {
-                thisTime = snap.data().created;
+                thisTime = snap.data().stored;
                 var imageCardDiv = doc.createElement("div");
                 imageCardDiv.classList.add("mdc-card","image-card");
                 imageCardDiv.style.backgroundImage = "url(" + snap.data().image + ")";
@@ -1145,49 +1083,7 @@ License: MIT 2018
             });
         });        
     }
-    function dropGitHubRepos(){
-        getJSON('https://api.github.com/users/rhroyston/repos').then(function(res) {
-            if (res) {
-                res.sort(compare).reverse();
-                var qty = 6;
-                for (var i = 0; i < qty; i++) {
-                    //this is where we get the data and handle it
-                    var n = res[i]["name"];
-                    var updated = Date.parse(res[i]["updated_at"]);
-                    updated = "Updated " + clock.what.month(updated) + " " + clock.what.day(updated) + ", " + clock.what.year(updated);
-                    var lang = res[i]["language"];
-                    var desc = res[i]["description"];
-                    var stars = res[i]["stargazers_count"]; 
-                    var forks = res[i]["forks_count"];
-                    dropCard(n,updated,lang,desc,stars,forks);
-                }
-                //add 100% div then '...more' button-link
-                var myDiv = doc.createElement("div");
-                myDiv.classList.add("full-wide");
-                myDiv.id = "code-section-more-button";
-                githubSection.appendChild(myDiv);
-                var btn = doc.createElement("a");
-                // btn.classList.add("mdc-button", "flex-item");
-                btn.classList.add("mdc-button", "float-right");
-                btn.href = "//github.com/rhroyston";
-                btn.innerHTML = "...more";
-                myDiv.appendChild(btn);
-                githubSection.parentNode.insertBefore(myDiv, githubSection.nextSibling);
-                //githubSection.appendChild(myDiv);                
-                function compare(a, b) {
-                    if (a.stargazers_count < b.stargazers_count)
-                        return -1;
-                    if (a.stargazers_count > b.stargazers_count)
-                        return 1;
-                    return 0;
-                }
-            } else {
-                console.log("response not found");
-            }
-        }).catch(function(error) {
-            console.log("Error getting document:", error);
-        });
-    }    
+
     function getActiveDialogSection(){
         var dialogBody = doc.querySelector(".mdc-dialog__body");
         var sections = dialogBody.getElementsByTagName("section");
@@ -1197,24 +1093,7 @@ License: MIT 2018
             }
         }
     }
-    function getJSON(url){
-    	return new Promise(function(resolve, reject) {
-    		var xhr = new XMLHttpRequest();
-    		xhr.open('get', url, true);
-    		//xhr.responseType = 'json';
-    		xhr.onload = function() {
-    			var status = xhr.status;
-    			if (status == 200) {
-    				//var serverResponse = JSON.parse(xml.responseText);
-    				resolve(JSON.parse(xhr.response));
-    			}
-    			else {
-    				reject(status);
-    			}
-    		};
-    		xhr.send();
-    	});
-    };
+
     function inputMaskHandler(){
         adminUrlTargetElement = this.nextElementSibling;
         this.nextElementSibling.click();
