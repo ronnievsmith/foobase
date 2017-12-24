@@ -221,6 +221,7 @@ h1 {
     margin: 12px 0px 12px 0px;
 }
 
+
 .align {
     vertical-align: middle;
 }
@@ -440,14 +441,6 @@ h1 {
 .pseudo-anchor:hover {
     cursor: pointer;
 }
-.quote{
-    margin: 24px 36px 24px 36px;
-    border-style: solid;
-    border-color: #ffd600;
-    border-width: 0px 0px 0px 8px;
-    padding:12px;
-    color: #616161;
-}
 .quote-div{
     background:#fafafa;
     margin: 0px 0px 24px 0px;
@@ -461,7 +454,7 @@ h1 {
     align-items: flex-start;    
 }
 .quote-span{
-    margin-left:24px;
+    margin:6px 6px 6px 24px;
 }
 .star-image{
     background-image: url("/media/ic_star_white_18px.svg");
@@ -484,12 +477,12 @@ h1 {
         grid-column-start: column-line-1;
         grid-column-end: column-line-4;
     }
-    main {
+    nav {
         grid-column-start: column-line-1;
         grid-column-end: column-line-4;
         grid-row: row-line-2;
     }
-    nav {
+    main {
         grid-column-start: column-line-1;
         grid-column-end: column-line-4;
         grid-row: row-line-3;
