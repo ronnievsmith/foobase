@@ -41,7 +41,8 @@ This is an excellent starting point for your next Firebase web project.
 service cloud.firestore {
   match /databases/{database}/documents {
     match /{document=**} {
-      allow read, write: if request.auth.uid == "8FwcgfTAk6T6VOWmNWu5I47BI7g1";
+      allow read;
+      allow write: if request.auth.uid == "8FwcgfTAk6T6VOWmNWu5I47BI7g1";
     }
     match /users/{userId} {
       allow read, write: if request.auth.uid == userId || request.auth.uid == "8FwcgfTAk6T6VOWmNWu5I47BI7g1";
