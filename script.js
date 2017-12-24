@@ -402,7 +402,6 @@ License: MIT 2018
         // Upload file and metadata to the object 'images/mountains.jpg'
         var uploadTask;
         var target = firebase.storage().ref().child('images/');
-        console.log(evt.target.id);
         switch (evt.target.id) {
             case "admin-image-input-file":
                 uploadTask = target.child(file.name).put(file, metadata);
@@ -481,13 +480,7 @@ License: MIT 2018
             });
         }).catch(function(error) {
             toast(error.message);
-            
             console.log(error.message);
-            //hacketh
-            // setTimeout(function() {
-            //     handleResetPassword(firebase.auth(), oobCode);
-            // }, 1500);
-            
         });
     }
     function handleRecoverEmail(oobCode) {
@@ -670,11 +663,8 @@ License: MIT 2018
                         dialog.close();
                         break;
                     case 'email-reset-section':
-                        console.log("email-reset-section FIRED");
                         break;
                     case 'password-reset-section':
-                        //newPassword(doc.getElementById("verify-new-email-input").value);
-                        console.log("password-reset-section fired accept");
                         verifyPassword(oobCode, doc.getElementById("verify-new-email-input").value, firebase.auth().currentUser.email);
                         break;
                 }
@@ -684,7 +674,6 @@ License: MIT 2018
             }
         });
         dialog.listen('MDCDialog:cancel', function() {
-            console.log('canceled');
             resetDialogSections();
         });
     }
@@ -803,7 +792,6 @@ License: MIT 2018
             try {
                 if(choice === "Profile"){
                     clearMainSections();
-                    doc.getElementById("page-title-section").classList.add("hidden");
                     doc.getElementById("profile").classList.remove("hidden");
                     profileTabBar.layout();
                     returnPhotoURL().then(function(value){
@@ -960,9 +948,11 @@ License: MIT 2018
             unboldNavAnchors();
             this.classList.add("bold");
             clearMainSections();
+            
             if(section === "/"){
-                window.history.pushState(null, null, section);
                 showHomeSection();
+                window.history.pushState(null, null, section);
+                
             } else {
                 window.history.pushState(null, null, "?section=" + section.toLowerCase());
             }
@@ -993,9 +983,6 @@ License: MIT 2018
                 dropImages();
             break;
             case ("quotes"):
-                
-                doc.getElementById("page-title-section").innerHTML = "Quotes";
-                doc.getElementById("page-title-section").classList.remove("hidden");
                 doc.getElementById("quotes-section").innerHTML = "";
                 doc.getElementById("quotes-section").classList.remove("hidden");
                 dropQuotes();
@@ -1037,14 +1024,6 @@ License: MIT 2018
             mainBodySections[i].classList.add("hidden");
             //mainBodySections[i].style.display = "none";
         }
-        //clean out programatically filled in code section
-        doc.getElementById("code-section").innerHTML = "";
-        if (doc.getElementById("code-section-more-button")){
-            console.log("full wide seen");
-            var codeSectionMoreButton = doc.getElementById("code-section-more-button");
-            codeSectionMoreButton.parentNode.removeChild(codeSectionMoreButton);
-        }
-
     }
 
     function dropQuotes(){
@@ -1132,9 +1111,7 @@ License: MIT 2018
         }
     }
     function showHomeSection(){
-        if(doc.getElementById("home-section") && doc.getElementById("page-title")){
-            doc.getElementById("page-title").innerHTML = "";
-            //doc.getElementById("page-title-section").classList.remove("hidden");
+        if(doc.getElementById("home-section")){
             doc.getElementById("home-section").classList.remove("hidden");
             doc.querySelector("body > nav > section > span:nth-of-type(1)").classList.add("bold");            
         }

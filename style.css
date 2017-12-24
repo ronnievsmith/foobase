@@ -201,9 +201,6 @@ h1 {
 #profile-panel-3 > section > section > button {
     margin: 12px 24px 0px 0px;    
 }
-#page-title {
-    margin: 8px 0px 0px -4px;
-}
 #top-banner {
     height: 0;
     padding-top: 13.66%;
@@ -224,15 +221,6 @@ h1 {
 
 .align {
     vertical-align: middle;
-}
-.app-card > .mdc-card__actions{
-    justify-content: flex-end;
-    background-color:#fafafa;
-}
-.app-card > .mdc-card__primary > .mdc-card__title, .mdc-card__subtitle {
-    line-height: 1.2em;
-    height: 2.4em;
-    overflow: hidden;
 }
 .background-blue-500{
     background-color: #2196f3;
