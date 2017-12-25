@@ -1,4 +1,4 @@
-# Freebase
+# Foobase
 #### Firebase v4 Single Page APP TEMPLATE + MDC-Web + CSS Responsive Grid Layout
 
 ##### [foobase.rack.pub](https://foobase.rack.pub)
