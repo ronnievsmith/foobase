@@ -1,14 +1,14 @@
 # Freebase
 #### Firebase v4 Single Page APP TEMPLATE + MDC-Web + CSS Responsive Grid Layout
 
-##### [freebase.rack.pub](https://freebase.rack.pub)
+##### [foobase.rack.pub](https://foobase.rack.pub)
 
 ### Synopsis
 
 A [Firebase Authentication (v4)](https://firebase.google.com/products/auth/) with [Material Components](//material.io/components) user interface, UI, template. Sign in with a token from your favorite social media platform or via email. 
 This is an excellent starting point for your next Firebase web project.
 
-<img src="https://github.com/rhroyston/rhroyston.github.io/blob/master/freebase.jpg" alt="screenshot" style="max-width:80%">
+<img src="https://github.com/rhroyston/rhroyston.github.io/blob/master/foobase.jpg" alt="screenshot" style="max-width:80%">
 
 #### Features
 
