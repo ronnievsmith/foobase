@@ -1,14 +1,12 @@
 # Foobase
 #### Firebase v4 Single Page APP TEMPLATE + MDC-Web + CSS Responsive Grid Layout
 
-##### [foobase.rack.pub](https://foobase.rack.pub)
-
 ### Synopsis
 
 A [Firebase Authentication (v4)](https://firebase.google.com/products/auth/) with [Material Components](//material.io/components) user interface, UI, template. Sign in with a token from your favorite social media platform or via email. 
 This is an excellent starting point for your next Firebase web project.
 
-<img src="https://github.com/rhroyston/rhroyston.github.io/blob/master/foobase.jpg" alt="screenshot" style="max-width:80%">
+<img src="https://ronnievsmith.com/media/foobase.jpg" alt="screenshot" style="max-width:80%">
 
 #### Features
 
@@ -72,11 +70,11 @@ service firebase.storage {
 
 ### Contribute
 
-If you found a bug, have any questions or want to contribute or collaborate please let me know, [ron@rack.pub](mailto:ron@rack.pub).
+If you found a bug, have any questions or want to contribute or collaborate please let me know.
 
 ### License
 
-Copyright 2018 Ron Royston, [https://rack.pub](https://rack.pub) All rights reserved.
+Copyright 2018 Ronnie Smith, [https://ronnievsmith.com](https://ronnievsmith.com) All rights reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
